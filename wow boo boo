@@ -108,14 +108,7 @@ for i, v in pairs(getconnections(game:GetService("ScriptContext").Error)) do
 end
 
 --//
-	local old
-	old = UIHandler.SetActionBindActive
-	UIHandler.SetActionBindActive = function(a,b,c)
-		if tostring(b) == "Respawn" and c == true and instRespawn then
-			spawn(function()
-				wait(0.5)
-				SpawnUI:Open(true)
-			end) end end
+
 local Core = {
     ["Weapons"] = {},
     ["Ambient"] = game:GetService("Lighting").Ambient,
@@ -1029,9 +1022,7 @@ end)
 CategoryVariableHere:Toggle("NoFallDamage",function(State)
 Settings.NoFallDamage = State
 end)
-CategoryVariableHere:Toggle("Instant Respawn",function(State)
-instRespawn = State
-end)
+
 
 CategoryVariableHere:Toggle("AutoGetUp",function(State)
 Settings.AutoGetUp = State
