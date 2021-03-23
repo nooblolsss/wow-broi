@@ -1,0 +1,379 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+if not shared.SilentAim then --// If the table doesn't exist. Create one.
+    shared.SilentAim = {
+        Enabled = false,
+        HeadshotChance = 100
+    }
+end
+
+--// Main script.
+--// Of course you could just do require(game:GetService("ReplicatedStorage"):WaitForChild("TS")), but why do it the easy way?
+
+local TS = nil
+for Index, Value in pairs(getgc(true)) do --// Looping through the garbage collection.
+    if typeof(Value) == "table" and rawget(Value, "InitProjectile") then --// Seeing if we can find the Projectiles table by searching for the "InitProjectile" function that is paired to said table.
+        if Value.TS then --// If it has the game's main module in it then we successfully found the game's main module.
+            TS = Value.TS
+            break
+        end
+    end
+end
+
+local function OnClientTeam(Player) --// Checking if the player we are looking for is on the client's (your) team using in-game functions.
+    if TS.Teams:ArePlayersFriendly(Player, LocalPlayer) then
+        return true
+    end
+
+    return false
+end
+
+local function GetHeadPart(Player) --// Getting the head part of a player.
+    local Character = TS.Characters:GetCharacter(Player)
+    local Body = (Character and Character:FindFirstChild("Body"))
+
+    if Character and Body then
+        return Body:FindFirstChild("Head")
+    end
+end 
+
+local function GetClosestPlayerCharacterToCursor()
+    local ClosestPlayer = nil
+    local FarthestDistance = math.huge
+
+    for Index, Player in pairs(Players:GetPlayers()) do --// Loop through all the players.
+        if Player == LocalPlayer then continue end --// Skip over this iteration if it is the Clients.
+        if OnClientTeam(Player) then continue end --// Skip over this iteration if the player is on the client's team.
+
+        local HeadPart = GetHeadPart(Player)
+
+        if HeadPart then
+            local HeadPosition, OnScreen = Workspace.CurrentCamera:WorldToViewportPoint(HeadPart.Position) --// Converting the 3D position to a screen position to make it easier.
+
+            if OnScreen then --// Check if they are visible/on screen in the roblox window area.
+                local MouseDistanceFromPlayer = (Vector2.new(HeadPosition.X, HeadPosition.Y) - UserInputService:GetMouseLocation()).Magnitude --// Check the mouse distance from the player.
+                
+                if MouseDistanceFromPlayer < FarthestDistance then
+                    FarthestDistance = MouseDistanceFromPlayer --// Make the farthest distance the mouse distance.
+                    ClosestPlayer = Player --// Closest player is the player iteration we are on for now, may change later on.
+                end
+            end
+        end
+    end
+
+    return TS.Characters:GetCharacter(ClosestPlayer) --// Return the player's character.
+end
+
+local OldFireProjectile = TS.Projectiles.InitProjectile --// Making a backup of the old function so we can use it to spoof later on.
+TS.Projectiles.InitProjectile = function(self, ...) --// I can't explain self well, but in this situation it is just the Projectiles table. Hooking the function.
+    local Arguments = {...} --// Converting the function arguments to a table.
+    
+    if shared.SilentAim.Enabled and Arguments[4] == LocalPlayer then
+        local ClosestPlayer = GetClosestPlayerCharacterToCursor()
+        local HeadshotChance = math.random(shared.SilentAim.HeadshotChance, 100)
+
+        --// Reference: https://coasts.cool/uploads/zo0BmqjIm0TBlmsy1Mkn.png
+        --// Position: Arguments[2]
+        --// Velocity: Arguments[3]
+
+        if ClosestPlayer and (ClosestPlayer.Health.Value > 0) then --// Check if it returned a player and the player is alive.
+            if HeadshotChance == 100 then --// If the random number hits 100 we goto the head because it got the top number.
+                Arguments[2] = (ClosestPlayer.Hitbox.Head.Position - Arguments[3])
+            else
+                Arguments[2] = (ClosestPlayer.Hitbox.Chest.Position - Arguments[3]) --// If not, we will hit at their chest.
+            end
+
+            --// Subtracting with the velocity to get the exact position to hit on the player's head.
+            --// From google: Velocity is the rate at which the position changes. The average velocity is the displacement or position change (a vector quantity) per time ratio.
+        end
+    end
+    
+    return OldFireProjectile(self, unpack(Arguments)) --// Unpacking the arguments. Basically replcaing parts of the game's fired arguments with our spoofed ones.
+end
+math.randomseed(tick());
+local modules, controlfunc;
+for i,v in next, getgc(true) do
+    if type(v) == "table" then
+        if rawget(v, "Version") and rawget(v, "Kitty") then
+            local mt = getrawmetatable(v);
+            modules = select(2, pcall(getupvalue, mt.__index, 1)); --gets the ts module (haha totally not stolen from kiriot :p)
+        elseif rawget(v, "Control") and type(rawget(v, "Control")) == "function" then
+            controlfunc = rawget(v, "Control"); --control function used for walkspeed mult
+        end
+    end
+    if modules and controlfunc then break; end
+end
+if not modules or (modules and not rawget(modules, "Network")) then
+    print("Failed To Get TS Module"); -- :(
+    return;
+end
+if not controlfunc then
+    print("Failed To Get Control Function"); -- :(
+    return;
+end
+local toggles = {
+    aimbot = false,
+    silentaim = false,
+    teamcheck = false,
+    vischeck = false,
+    bodypart = "Head",
+    hitchance = 1,
+    fov = 0,
+    norecoil = false,
+    nospread = false,
+    alwaysauto = false,
+    fastfirerate = false,
+    fly = false,
+    flyspeed = 100,
+};
+local oldmult = 1.8;
+local ok = false;
+local chartable = getupvalue(modules.Characters.GetCharacter, 1);
+local players = game:GetService("Players");
+local runservice = game:GetService("RunService");
+local uis = game:GetService("UserInputService");
+local camera = workspace.CurrentCamera;
+local localplayer = players.LocalPlayer;
+local mouse = localplayer:GetMouse();
+local isholding = false;
+local chamsholder = Instance.new("Folder", game:GetService("CoreGui"));
+
+
+
+
+local function getclosesttocursor()
+    local max, close = math.huge;
+    for player, character in next, chartable do
+        if player ~= localplayer and (toggles.teamcheck and not modules.Teams:ArePlayersFriendly(player, localplayer) or not toggles.teamcheck) and chartable[localplayer] then
+            local chosenpart = (character and character:FindFirstChild("Hitbox") and character.Hitbox:FindFirstChild(toggles.bodypart));
+            if chosenpart then --if part exist
+                local pos, onscreen = camera:WorldToScreenPoint(chosenpart.Position);
+                if onscreen then --if on screen (not to be confused with behind walls or not)
+                    local dist = Vector2.new(pos.X - mouse.X, pos.Y - mouse.Y).Magnitude;
+                    if dist <= max and dist <= toggles.fov then
+                        local part = camera:GetPartsObscuringTarget({chosenpart.Position}, {workspace.Characters, workspace.NonGeometry});
+                        if (toggles.vischeck and #part == 0 or not toggles.vischeck) then --gay but works
+                            max = dist;
+                            close = player;
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return close;
+end
+
+do-- hooks
+    local oldinit = modules.Projectiles.InitProjectile; --thanks coasts for method
+    local oldfire = modules.Network.Fire;
+    local oldlookvector = modules.Input.Reticle.LookVector;
+    local oldwait = modules.Timer.Wait;
+    local stopchanging = false; --ugly
+    local originalfuncs = {}; -- PLEASE DONT BULLY ME FOR THIS
+    modules.Projectiles.InitProjectile = function(self, ...)
+        local args = {...};
+        if args[4] == localplayer and toggles.silentaim and math.random(1, 100) <= toggles.hitchance then
+            local char = chartable[getclosesttocursor()];
+            local chosenpart = (char and char:FindFirstChild("Hitbox") and char.Hitbox:FindFirstChild(toggles.bodypart));
+            if chosenpart then
+                args[2] = chosenpart.Position - args[3];
+                return oldinit(self, unpack(args));
+            end
+        end
+        return oldinit(self, ...);
+    end
+    modules.Network.Fire = function(self, ...)
+        local args = {...};
+        if args[1] == "Item_Paintball" and args[2] == "Shoot" then
+            if not stopchanging then
+                originalfuncs[8], originalfuncs[9], originalfuncs[10] = getupvalue(2, 8), getupvalue(2, 9), getupvalue(2, 10);
+                stopchanging = true;
+            end
+            setupvalue(2, 8, function(...) if toggles.norecoil then return; end return originalfuncs[8](...); end);
+            setupvalue(2, 9, function(...) if toggles.norecoil then return; end return originalfuncs[9](...); end);
+            setupvalue(2, 10, function(...) if toggles.norecoil then return; end return originalfuncs[10](...); end);
+            -- PLEASE FORGIVE ME I ONLY DID IT BECAUSE HOOKFUNCTION GAY :pleading_face:
+        end
+        return oldfire(self, ...);
+    end
+    modules.Input.Reticle.LookVector = function(...)
+        return (toggles.nospread and camera.CFrame.LookVector or oldlookvector(...));
+    end
+    modules.Timer.Wait = function(self, time)
+        local Upvals = getupvalues(2);
+        if toggles.fastfirerate then
+            if type(Upvals[1]) == "table" and rawget(Upvals[1], "Equipped") and typeof(Upvals[7]) == "Instance" and Upvals[7]:IsA("IntValue") then
+                return oldwait(self, 0);
+            end
+        end
+        return oldwait(self, time);
+    end
+end
+uis.InputBegan:Connect(function(key, gp)
+    ok = gp;
+    if not gp and key.UserInputType.Name == "MouseButton2" then
+        isholding = true;
+    end
+end)
+uis.InputEnded:Connect(function(key, gp)
+    if not gp and key.UserInputType.Name == "MouseButton2" then
+        isholding = false;
+    end
+end)
+runservice.RenderStepped:Connect(function()
+    math.randomseed(tick());
+    if toggles.aimbot then
+        if isholding and math.random(1, 100) <= toggles.hitchance then
+            local char = chartable[getclosesttocursor()];
+            local chosenpart = (char and char:FindFirstChild("Hitbox") and char.Hitbox:FindFirstChild(toggles.bodypart));
+            if chosenpart then
+                local pos, onscreen = camera:WorldToScreenPoint(chosenpart.Position);
+                if onscreen then
+                    mousemoverel(pos.X - mouse.X, pos.Y - mouse.Y);
+                end
+            end
+        end
+    end
+end)
+
+    
+
+local Raycast = require(game:GetService("ReplicatedStorage").TS).Raycast
+shared.WallbangEnabled = false
+if shared.WallbangEnabled == true then
+    debug.setupvalue(Raycast.CastGeometryAndEnemies, 1, nil)
+    debug.setupvalue(Raycast.CastGeometryAndEnemies, 2, nil)
+else 
+    debug.setupvalue(Raycast.CastGeometryAndEnemies, 1, workspace.Geometry)
+    debug.setupvalue(Raycast.CastGeometryAndEnemies, 2, workspace.Terrain)
+end
+
+local library = loadstring(game.HttpGet(game, 'https://pastebin.com/raw/nwVvsxTQ'))()
+local w1 = library:Window('Bad Business') -- Text
+w1:Toggle('silentaim', 'aim', false, function(toggled)
+   shared.SilentAim.Enabled = toggled
+end)
+w1:Toggle('fastfirerate', 'aim', false, function(toggled)
+toggles.fastfirerate = toggled
+end)
+
+
+
+w1:Toggle('norecoil', 'aim', false, function(toggled)
+toggles.norecoil = toggled
+end)
+w1:Toggle('nospread', 'aim', false, function(toggled)
+toggles.nospread = toggled
+end)
+w1:Toggle('WallBang', 'aim', false, function(toggled)
+shared.WallbangEnabled = toggled
+end)
+w1:Button('sprint speed', function()
+Speed = 60
+
+for i,v in pairs(getgc(true)) do
+    if type(v) == 'table' and rawget(v,'Control') and type(v.Control) == 'function' then
+        if table.find(getconstants(v.Control),'Stand') then
+            setconstant(v.Control,(table.find(getconstants(v.Control),'Stand'))+1,Speed/10)
+        end
+    end
+end end)
+w1:Button('Rejoin', function()
+    local ts = game:GetService("TeleportService")
+local p = game:GetService("Players").LocalPlayer
+ts:Teleport(game.PlaceId, p) end)
+w1:Button('ServerHop', function()
+    local PlaceID = game.PlaceId
+local AllIDs = {}
+local foundAnything = ""
+local actualHour = os.date("!*t").hour
+local Deleted = false
+local File = pcall(function()
+    AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+end)
+if not File then
+    table.insert(AllIDs, actualHour)
+    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+end
+function TPReturner()
+    local Site;
+    if foundAnything == "" then
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+    else
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+    end
+    local ID = ""
+    if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+        foundAnything = Site.nextPageCursor
+    end
+    local num = 0;
+    for i,v in pairs(Site.data) do
+        local Possible = true
+        ID = tostring(v.id)
+        if tonumber(v.maxPlayers) > tonumber(v.playing) then
+            for _,Existing in pairs(AllIDs) do
+                if num ~= 0 then
+                    if ID == tostring(Existing) then
+                        Possible = false
+                    end
+                else
+                    if tonumber(actualHour) ~= tonumber(Existing) then
+                        local delFile = pcall(function()
+                            delfile("NotSameServers.json")
+                            AllIDs = {}
+                            table.insert(AllIDs, actualHour)
+                        end)
+                    end
+                end
+                num = num + 1
+            end
+            if Possible == true then
+                table.insert(AllIDs, ID)
+                wait()
+                pcall(function()
+                    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                    wait()
+                    game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                end)
+                wait(4)
+            end
+        end
+    end
+end
+
+function Teleport()
+    while wait() do
+        pcall(function()
+            TPReturner()
+            if foundAnything ~= "" then
+                TPReturner()
+            end
+        end)
+    end
+end
+
+-- If you'd like to use a script before server hopping (Like a Automatic Chest collector you can put the Teleport() after it collected everything.
+Teleport() end)
+w1:Button('Destroy GUI', function()
+    for i,v in pairs(game.CoreGui:GetChildren()) do
+        if v:FindFirstChild('Top') then
+            v:Destroy()    
+        end
+    end
+end)
+local w2 = library:Window('Info')
+w2:Label('wallbang is only 20 studs') -- Text
+
+
+local w3 = library:Window('Credits')
+w3:Label('Credits for ui 0 x 3 7')
+w3:Label('Credits to DekuDimz#0734')
+w3:Label('aka me lol')
+
+
+
