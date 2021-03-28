@@ -1,0 +1,799 @@
+circle = Drawing.new("Circle")
+circle.Position = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y / 2)
+circle.Color = Color3.fromRGB(22, 13, 56)
+circle.Thickness = 0.1
+circle.NumSides = 12
+circle.Radius = 250
+circle.Visible = true
+circle.Filled = false
+local UserInputService = game:GetService("UserInputService")
+local Camera = game:GetService('Workspace').Camera
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
+local IsKeyDown = false
+
+Settings = {
+    Enable = false,
+    TeamCheck = true,
+    Smooth = 5,
+    FOV = 250,
+    WallCheck = true,
+    BulletDrop = 149,
+    TriggerKey = Enum.UserInputType.MouseButton2,
+    BP = 22.7
+}
+function isVisible(character)
+    local Ray = Ray.new(Camera.CFrame.p, (character.Head.Position - Camera.CFrame.p).unit * 2048)
+    local part = workspace:FindPartOnRayWithIgnoreList(Ray, {})
+    if part:IsDescendantOf(character) then return true else return false end
+end
+
+function Calculate(distance)
+    return (1.01*math.pow(distance,4)+0.002*math.pow(distance,3)-0.07*math.pow(distance,2)+0.8*distance-2.05)
+end
+
+function WorldToScreen(Position)
+    return Camera:WorldToViewportPoint(Position)
+end
+
+function IsOnScreen(part)
+    local vector, onscreen = WorldToScreen(part.Position)
+    return (vector.Z > 0)
+end
+
+function IsInFov(part)
+    if part then
+        if IsOnScreen(part) then
+            local pos = WorldToScreen(part.Position)
+            local dist = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(pos.X, pos.Y)).magnitude
+            if dist <= workspace.CurrentCamera.ViewportSize.X / (90 / Settings.FOV) and dist < math.huge then
+                return true
+            end
+        end
+    end
+end
+
+function MyTeam()
+    if "Bright blue" == tostring(game.Players.LocalPlayer.TeamColor) then return "Phantoms" else return "Ghosts" end
+end
+
+function GetClosestPlayer()
+    local TargetDistance = math.huge
+    local Target = nil
+    for i, v in pairs(game.Workspace.Players:GetDescendants()) do
+        if v.Name == "Player" and v:FindFirstChild('HumanoidRootPart') then
+            local TargetScreenPos = WorldToScreen(v.HumanoidRootPart.Position)
+            local mag = (Vector2.new(TargetScreenPos.X, TargetScreenPos.Y) - Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)).magnitude
+            if IsInFov(v:FindFirstChild('Head')) then
+                if Settings.TeamCheck then
+                    if v.Parent.Name ~= MyTeam() then
+                        if mag < TargetDistance then
+                            TargetDistance = mag
+                            Target = v
+                        end
+                    end
+                elseif mag < TargetDistance then
+                    TargetDistance = mag
+                    Target = v
+                end
+            end
+        end
+    end
+    return Target
+end
+
+function GetClosestPlayerW()
+    local TargetDistance = math.huge
+    local Target = nil
+    for i, v in pairs(game.Workspace.Players:GetDescendants()) do
+        if v.Name == "Player" and v:FindFirstChild('HumanoidRootPart') then
+            local TargetScreenPos = WorldToScreen(v.HumanoidRootPart.Position)
+            local mag = (Vector2.new(TargetScreenPos.X, TargetScreenPos.Y) - Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)).magnitude
+            if IsInFov(v:FindFirstChild("Head")) then
+                if Settings.TeamCheck then
+                    if v.Parent.Name ~= MyTeam() then
+                        if Settings.WallCheck then
+                            if isVisible(v) and mag < TargetDistance then
+                                TargetDistance = mag
+                                Target = v
+                            end
+                        end
+                    end
+                elseif Settings.WallCheck then
+                    if isVisible(v) and mag < TargetDistance then
+                        TargetDistance = mag
+                        Target = v
+                    end
+                end
+            end
+        end
+    end
+    return Target
+end
+
+UserInputService.InputBegan:Connect(function(Input)
+    if Input.UserInputType == Settings.TriggerKey and Settings.Enable then
+        IsKeyDown = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(Input)
+    if Input.UserInputType == Settings.TriggerKey then
+        IsKeyDown = false
+	end
+end)
+
+local target = nil
+local function aimbot()
+
+    if Settings.WallCheck == false then
+        target = GetClosestPlayer()
+    else
+        target = GetClosestPlayerW()
+    end
+
+    if target ~= nil then
+        local BulletPrediction = target.HumanoidRootPart.Velocity * (game:GetService('Players').LocalPlayer.Character.HumanoidRootPart.Position - target.HumanoidRootPart.Position).magnitude / 1200 / Settings.BP
+        local aimAt, visible = WorldToScreen(target.Head.Position + Vector3.new(0,Calculate((game:GetService('Players').LocalPlayer.Character.HumanoidRootPart.Position - target.HumanoidRootPart.Position).magnitude / Settings.BulletDrop) / Settings.BulletDrop,0) + BulletPrediction) --We get the target's head and add a new vector3 with y being BulletDrop, then we get that from vector3 to vector2, and we basically get the magnitude of target and localplayer and then use our sick math to get a nice curve.
+        mousemoverel((aimAt.X - UserInputService:GetMouseLocation().X) / Settings.Smooth, (aimAt.Y - UserInputService:GetMouseLocation().Y) / Settings.Smooth)
+    end
+end
+
+game:GetService("RunService").RenderStepped:connect(function()
+    if IsKeyDown then
+        aimbot()
+    end
+end)
+local Meta = getrawmetatable(game)
+local NewIndex = Meta.__newindex
+setreadonly(Meta, false)
+
+Meta.__newindex = newcclosure(function(t, k, ...)
+   if not checkcaller() and (k == "WalkSpeed" or k == "JumpPower") then
+       return
+   end
+   NewIndex(t, k, ...)
+end)
+
+setreadonly(Meta, true)
+local Lib = loadstring(game:HttpGet('https://pastebin.com/raw/GaRF4FDA'))()
+local CategoryVariableHere= Lib:Category("Phantom Forces")
+
+
+CategoryVariableHere:Button("Slient Aim",function()
+local Players = game:GetService("Players")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local GameLogic, CharTable, Trajectory
+for I,V in pairs(getgc(true)) do
+    if type(V) == "table" then
+        if rawget(V, "gammo") then
+            GameLogic = V
+        end
+    elseif type(V) == "function" then
+        if debug.getinfo(V).name == "getbodyparts" then
+            CharTable = debug.getupvalue(V, 1)
+        elseif debug.getinfo(V).name == "trajectory" then
+            Trajectory = V
+        end
+    end
+    if GameLogic and CharTable and Trajectory then break end
+end
+
+local function Closest()
+    local Max, Close = math.huge
+    for I,V in pairs(Players:GetPlayers()) do
+        if V ~= LocalPlayer and V.Team ~= LocalPlayer.Team and CharTable[V] then
+            local Pos, OnScreen = Camera:WorldToScreenPoint(CharTable[V].torso.Position)
+            if OnScreen then
+                local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+                if Dist < Max then
+                    Max = Dist
+                    Close = V
+                end
+            end
+        end 
+    end
+    return Close
+end
+
+local MT = getrawmetatable(game)
+local __index = MT.__index
+setreadonly(MT, false)
+MT.__index = newcclosure(function(self, K)
+    if not checkcaller() and GameLogic.currentgun and GameLogic.currentgun.data and (self == GameLogic.currentgun.barrel or tostring(self) == "SightMark") and K == "CFrame" then
+        local CharChosen = (CharTable[Closest()] and CharTable[Closest()].head)
+        if CharChosen then
+            local _, Time = Trajectory(self.Position, Vector3.new(0, -workspace.Gravity, 0), CharChosen.Position, GameLogic.currentgun.data.bulletspeed)
+            return CFrame.new(self.Position, CharChosen.Position + (Vector3.new(0, -workspace.Gravity / 2, 0)) * (Time ^ 2) + (CharChosen.Velocity * Time))
+        end
+    end
+    return __index(self, K)
+end)
+setreadonly(MT, true) end)
+CategoryVariableHere:Button("Fps Booster",function()
+local decalsyeeted = true -- Leaving this on makes games look shitty but the fps goes up by at least 20.
+local g = game
+local w = g.Workspace
+local l = g.Lighting
+local t = w.Terrain
+t.WaterWaveSize = 0
+t.WaterWaveSpeed = 0
+t.WaterReflectance = 0
+t.WaterTransparency = 0
+l.GlobalShadows = false
+l.FogEnd = 9e9
+l.Brightness = 0
+settings().Rendering.QualityLevel = "Level01"
+for i, v in pairs(g:GetDescendants()) do
+    if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    elseif v:IsA("Decal") or v:IsA("Texture") and decalsyeeted then
+        v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Lifetime = NumberRange.new(0)
+    elseif v:IsA("Explosion") then
+        v.BlastPressure = 1
+        v.BlastRadius = 1
+    elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+        v.Enabled = false
+    elseif v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+        v.TextureID = 10385902758728957
+    end
+end
+for i, e in pairs(l:GetChildren()) do
+    if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+        e.Enabled = false
+    end
+end end)
+CategoryVariableHere:Button("grenade tp",function()
+local Camera = game:GetService("Workspace").CurrentCamera
+	local RunService = game:GetService("RunService")
+	local UserInputService = game:GetService("UserInputService")
+	local FontValue = 3
+	local Visibility = true 
+
+	local function ClosestPlayer()
+		local closestPlayer = nil
+		local shortestDistance = math.huge
+		for _, a in pairs(game.Workspace.Players:GetChildren()) do
+			if a.Name ~= game.Players.LocalPlayer.Team.Name then
+				for _, b in pairs(a:GetChildren()) do
+					if (b.Head.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude < shortestDistance then
+						closestPlayer = b
+						shortestDistance = (b.Head.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+					end
+				end
+			end
+		end
+		return closestPlayer
+	end
+	local b = Vector3.new()
+	game.RunService.RenderStepped:Connect(function()
+		b = ClosestPlayer().HumanoidRootPart.Position
+	end)
+	local mt = getrawmetatable(game)
+	local oldNamecall = mt.__namecall
+	local oldIndex = mt.__index
+	setreadonly(mt, false)
+	mt.__namecall = newcclosure(function(...)
+		local method = getnamecallmethod()
+		local args = {
+			...
+		}
+		if tostring(method) == "FireServer" and args[2] == "newgrenade" then
+			for i = 1, #args[4]["frames"] do
+				if i ~= 1 then
+					args[4]["frames"][i]["p0"] = b
+				end
+			end
+			args[4]["blowuptime"] = 0
+		end
+		return oldNamecall(unpack(args))
+	end)
+	setreadonly(mt, true)
+end)
+CategoryVariableHere:Button("Esp",function()
+local Camera = game:GetService("Workspace").CurrentCamera
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local FontValue = 3
+local Visibility = true
+
+local function CycleFont()
+    if FontValue + 1 > 3 then
+       FontValue = 1
+    else
+        FontValue = FontValue + 1
+    end
+end
+
+local function ModelTemplate()
+   local Objects = {
+       Box = Drawing.new("Quad"),
+       Name = Drawing.new("Text"),
+   } 
+   
+   return Objects
+end
+
+local function GetPartCorners(Part)
+	local Size = Part.Size * Vector3.new(1, 1.5)
+	return {
+        TR = (Part.CFrame * CFrame.new(-Size.X, -Size.Y, 0)).Position,
+		BR = (Part.CFrame * CFrame.new(-Size.X, Size.Y, 0)).Position,
+		TL = (Part.CFrame * CFrame.new(Size.X, -Size.Y, 0)).Position,
+		BL = (Part.CFrame * CFrame.new(Size.X, Size.Y, 0)).Position,
+	}
+end
+
+local function ApplyModel(Model)
+    local Objects = ModelTemplate()
+    local CurrentParent = Model.Parent
+    
+    spawn(function()
+        Objects.Name.Center = true
+        Objects.Name.Visible = true
+        Objects.Name.Outline = true
+        Objects.Name.Transparency = 1
+        Objects.Box.Visible = true
+        Objects.Box.Transparency = 1
+       
+        while Model.Parent == CurrentParent do
+            local Vector, OnScreen = Camera:WorldToScreenPoint(Model.Head.Position)
+            local Distance = (Camera.CFrame.Position - Model.HumanoidRootPart.Position).Magnitude
+            
+            if OnScreen and Model.Parent.Name ~= game:GetService("Players").LocalPlayer.Team.Name and Visibility then
+                Objects.Name.Position = Vector2.new(Vector.X, Vector.Y + math.clamp(Distance / 10, 10, 30) - 10)
+                Objects.Name.Size = math.clamp(30 - Distance / 10, 10, 30)
+                Objects.Name.Color = Color3.fromHSV(math.clamp(Distance / 5, 0, 125) / 255, 0.75, 1)
+                Objects.Name.Visible = true
+                Objects.Name.Font = FontValue
+                Objects.Name.Transparency = math.clamp((500 - Distance) / 200, 0.2, 1)
+            else
+                Objects.Name.Visible = false 
+            end
+            
+            Objects.Name.Text = string.format("[%s sd] [%s] Enemy", tostring(math.floor(Distance)), Model:FindFirstChildOfClass("Model") and Model:FindFirstChildOfClass("Model").Name or "NONE")
+            
+            local PartCorners = GetPartCorners(Model.HumanoidRootPart)
+            local VectorTR, OnScreenTR = Camera:WorldToScreenPoint(PartCorners.TR)
+            local VectorBR, OnScreenBR = Camera:WorldToScreenPoint(PartCorners.BR)
+            local VectorTL, OnScreenTL = Camera:WorldToScreenPoint(PartCorners.TL)
+            local VectorBL, OnScreenBL = Camera:WorldToScreenPoint(PartCorners.BL)
+            
+            if (OnScreenBL or OnScreenTL or OnScreenBR or OnScreenTR) and Model.Parent.Name ~= game:GetService("Players").LocalPlayer.Team.Name and Visibility then
+                Objects.Box.PointA = Vector2.new(VectorTR.X, VectorTR.Y + 36)
+                Objects.Box.PointB = Vector2.new(VectorTL.X, VectorTL.Y + 36)
+                Objects.Box.PointC = Vector2.new(VectorBL.X, VectorBL.Y + 36)
+                Objects.Box.PointD = Vector2.new(VectorBR.X, VectorBR.Y + 36)
+                Objects.Box.Color = Color3.fromHSV(math.clamp(Distance / 5, 0, 125) / 255, 0.75, 1)
+                Objects.Box.Thickness = math.clamp(3 - (Distance / 100), 0, 3)
+                Objects.Box.Transparency = math.clamp((500 - Distance) / 200, 0.2, 1)
+                Objects.Box.Visible = true
+            else
+                Objects.Box.Visible = false
+            end
+            
+            RunService.RenderStepped:Wait()
+        end
+        
+        Objects.Name:Remove()
+        Objects.Box:Remove()
+    end)
+end
+
+for _, Player in next, game:GetService("Workspace").Players.Phantoms:GetChildren() do
+    ApplyModel(Player)
+end
+
+for _, Player in next, game:GetService("Workspace").Players.Ghosts:GetChildren() do
+    ApplyModel(Player)
+end
+
+game:GetService("Workspace").Players.Phantoms.ChildAdded:Connect(function(Player)
+    delay(0.5, function()
+        ApplyModel(Player)
+    end)
+end)
+
+game:GetService("Workspace").Players.Ghosts.ChildAdded:Connect(function(Player)
+    delay(0.5, function()
+        ApplyModel(Player)
+    end)
+end)
+
+UserInputService.InputBegan:Connect(function(Input, GP)
+    if not GP and Input.KeyCode == Enum.KeyCode.Five then
+        Visibility = not Visibility
+    end 
+    
+    if not GP and Input.KeyCode == Enum.KeyCode.Four then
+        CycleFont()
+    end
+end) end)
+CategoryVariableHere:Button("FullBright",function()
+local L = game:GetService("Lighting")
+
+L:GetPropertyChangedSignal("Brightness"):connect(function()
+    L.Brightness = math.huge;
+end)
+
+L:GetPropertyChangedSignal("Ambient"):connect(function()
+    L.Ambient = Color3.fromRGB(255,255,255)
+end)
+
+L:GetPropertyChangedSignal("GlobalShadows"):connect(function()
+    L.GlobalShadows = false;
+end)
+
+L.Brightness = math.huge;
+L.Ambient = Color3.fromRGB(255,255,255)
+L.GlobalShadows = false;
+L.MapSaturation:Destroy()
+L.SkyBox:Destroy()
+L.BlackWhite:Destroy()
+sethiddenproperty(game.Workspace.Lighting,"Technology",2) end)
+
+CategoryVariableHere:Button("If kicked serverhop",function()
+if not game:IsLoaded() then
+	game.Loaded:Wait()
+end
+game.CoreGui.RobloxPromptGui.promptOverlay.DescendantAdded:Connect(function()
+    local GUI = game.CoreGui.RobloxPromptGui.promptOverlay:FindFirstChild("ErrorPrompt")
+    if GUI then
+        if GUI.TitleFrame.ErrorTitle.Text == "Disconnected" then
+            if #game.Players:GetPlayers() <= 1 then
+                game.Players.LocalPlayer:Kick("\nRejoining...")
+                wait()
+                local PlaceID = game.PlaceId
+local AllIDs = {}
+local foundAnything = ""
+local actualHour = os.date("!*t").hour
+local Deleted = false
+local File = pcall(function()
+    AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+end)
+if not File then
+    table.insert(AllIDs, actualHour)
+    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+end
+function TPReturner()
+    local Site;
+    if foundAnything == "" then
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+    else
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+    end
+    local ID = ""
+    if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+        foundAnything = Site.nextPageCursor
+    end
+    local num = 0;
+    for i,v in pairs(Site.data) do
+        local Possible = true
+        ID = tostring(v.id)
+        if tonumber(v.maxPlayers) > tonumber(v.playing) then
+            for _,Existing in pairs(AllIDs) do
+                if num ~= 0 then
+                    if ID == tostring(Existing) then
+                        Possible = false
+                    end
+                else
+                    if tonumber(actualHour) ~= tonumber(Existing) then
+                        local delFile = pcall(function()
+                            delfile("NotSameServers.json")
+                            AllIDs = {}
+                            table.insert(AllIDs, actualHour)
+                        end)
+                    end
+                end
+                num = num + 1
+            end
+            if Possible == true then
+                table.insert(AllIDs, ID)
+                wait()
+                pcall(function()
+                    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                    wait()
+                    game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                end)
+                wait(4)
+            end
+        end
+    end
+end
+
+function Teleport()
+    while wait() do
+        pcall(function()
+            TPReturner()
+            if foundAnything ~= "" then
+                TPReturner()
+            end
+        end)
+    end
+end
+
+-- If you'd like to use a script before server hopping (Like a Automatic Chest collector you can put the Teleport() after it collected everything.
+Teleport()
+            else
+              local PlaceID = game.PlaceId
+local AllIDs = {}
+local foundAnything = ""
+local actualHour = os.date("!*t").hour
+local Deleted = false
+local File = pcall(function()
+    AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+end)
+if not File then
+    table.insert(AllIDs, actualHour)
+    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+end
+function TPReturner()
+    local Site;
+    if foundAnything == "" then
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+    else
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+    end
+    local ID = ""
+    if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+        foundAnything = Site.nextPageCursor
+    end
+    local num = 0;
+    for i,v in pairs(Site.data) do
+        local Possible = true
+        ID = tostring(v.id)
+        if tonumber(v.maxPlayers) > tonumber(v.playing) then
+            for _,Existing in pairs(AllIDs) do
+                if num ~= 0 then
+                    if ID == tostring(Existing) then
+                        Possible = false
+                    end
+                else
+                    if tonumber(actualHour) ~= tonumber(Existing) then
+                        local delFile = pcall(function()
+                            delfile("NotSameServers.json")
+                            AllIDs = {}
+                            table.insert(AllIDs, actualHour)
+                        end)
+                    end
+                end
+                num = num + 1
+            end
+            if Possible == true then
+                table.insert(AllIDs, ID)
+                wait()
+                pcall(function()
+                    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                    wait()
+                    game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                end)
+                wait(4)
+            end
+        end
+    end
+end
+
+function Teleport()
+    while wait() do
+        pcall(function()
+            TPReturner()
+            if foundAnything ~= "" then
+                TPReturner()
+            end
+        end)
+    end
+end
+
+-- If you'd like to use a script before server hopping (Like a Automatic Chest collector you can put the Teleport() after it collected everything.
+Teleport()
+            end
+        end
+    end
+end) end)
+
+CategoryVariableHere:Button("V Walkspeed",function()
+local walkspeedplayer = game:GetService("Players").LocalPlayer
+	local walkspeedmouse = walkspeedplayer:GetMouse()
+ 
+	local walkspeedenabled = false
+ 
+	function x_walkspeed(key)
+		if (key == "v") then
+			if walkspeedenabled == false then
+				_G.WS = 40;
+				local Humanoid = game:GetService("Players").LocalPlayer.Character.Humanoid;
+				Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+				Humanoid.WalkSpeed = _G.WS;
+				end)
+				Humanoid.WalkSpeed = _G.WS;
+ 
+				walkspeedenabled = true
+			elseif walkspeedenabled == true then
+				_G.WS = 20;
+				local Humanoid = game:GetService("Players").LocalPlayer.Character.Humanoid;
+				Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+				Humanoid.WalkSpeed = _G.WS;
+				end)
+				Humanoid.WalkSpeed = _G.WS;
+ 
+				walkspeedenabled = false
+			end
+		end
+	end
+ 
+	walkspeedmouse.KeyDown:connect(x_walkspeed)
+end)
+CategoryVariableHere:Button("Lag Switch F3",function()
+local a = false
+local b = settings()
+
+game:service'UserInputService'.InputEnded:connect(function(i)
+if i.KeyCode == Enum.KeyCode.F3 then
+a = not a
+b.Network.IncomingReplicationLag = a and 10 or 0
+end
+end) end) 
+CategoryVariableHere:Button("ServerHop",function()
+local PlaceID = game.PlaceId
+local AllIDs = {}
+local foundAnything = ""
+local actualHour = os.date("!*t").hour
+local Deleted = false
+local File = pcall(function()
+    AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+end)
+if not File then
+    table.insert(AllIDs, actualHour)
+    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+end
+function TPReturner()
+    local Site;
+    if foundAnything == "" then
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+    else
+        Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+    end
+    local ID = ""
+    if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+        foundAnything = Site.nextPageCursor
+    end
+    local num = 0;
+    for i,v in pairs(Site.data) do
+        local Possible = true
+        ID = tostring(v.id)
+        if tonumber(v.maxPlayers) > tonumber(v.playing) then
+            for _,Existing in pairs(AllIDs) do
+                if num ~= 0 then
+                    if ID == tostring(Existing) then
+                        Possible = false
+                    end
+                else
+                    if tonumber(actualHour) ~= tonumber(Existing) then
+                        local delFile = pcall(function()
+                            delfile("NotSameServers.json")
+                            AllIDs = {}
+                            table.insert(AllIDs, actualHour)
+                        end)
+                    end
+                end
+                num = num + 1
+            end
+            if Possible == true then
+                table.insert(AllIDs, ID)
+                wait()
+                pcall(function()
+                    writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                    wait()
+                    game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                end)
+                wait(4)
+            end
+        end
+    end
+end
+
+function Teleport()
+    while wait() do
+        pcall(function()
+            TPReturner()
+            if foundAnything ~= "" then
+                TPReturner()
+            end
+        end)
+    end
+end
+
+-- If you'd like to use a script before server hopping (Like a Automatic Chest collector you can put the Teleport() after it collected everything.
+Teleport()
+end)
+
+CategoryVariableHere:Button("Rejoin",function()
+    local ts = game:GetService("TeleportService")
+local p = game:GetService("Players").LocalPlayer
+ts:Teleport(game.PlaceId, p) end)
+local CategoryVariableHere= Lib:Category("Credits and info")
+CategoryVariableHere:Label("Credits to a r q for ui liba")
+CategoryVariableHere:Label("Credits to DekuDimz#7960 aka me lol")
+CategoryVariableHere:Label("Credits to deto#1153 for hot esp")
+CategoryVariableHere:Label("Credits to e621 for fps booster")
+Lib:Reload()
+
+
+
+for i, v in next, getgc() do
+    if type(v) == 'function' and islclosure(v) and getinfo(v).name == 'animstep' then
+        animstep = v; 
+        break
+    end
+end
+
+if (not animstep) then return end
+
+local tracker = getupvalues(animstep)[6];
+local stoptracker = getupvalues(animstep)[7];
+
+if type(tracker)~='function' or getinfo(tracker).name ~= 'tracker' then  return end
+if type(stoptracker)~='function' or getinfo(stoptracker).name ~= 'stoptracker' then return end
+
+-- nuke the old 'stoptracker' function :D
+spawn(stoptracker);
+setupvalue(animstep, 7, function() end)
+
+game:GetService('RunService').Stepped:connect(function()
+    local gundata = getupvalues(animstep)[4];
+
+    if type(gundata) == 'table' and rawget(gundata, 'data') then
+        if rawget(gundata.data, 'bulletspeed') then
+            tracker(gundata.data);
+            return;
+        end
+    end
+    
+    stoptracker();
+end);
+
+local function ClosestPlayer()
+local closestPlayer=nil
+local shortestDistance=math.huge
+for _,a in pairs(game.Workspace.Players:GetChildren())do
+if a.Name~=game.Players.LocalPlayer.Team.Name then
+for _,b in pairs(a:GetChildren())do
+if(b.Head.Position-game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude<shortestDistance then
+closestPlayer=b
+shortestDistance=(b.Head.Position-game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+end
+end
+end
+end
+return closestPlayer
+end
+local b=Vector3.new()
+game.RunService.RenderStepped:Connect(function()
+b=ClosestPlayer().HumanoidRootPart.Position
+end)
+local mt=getrawmetatable(game)
+local oldNamecall=mt.__namecall
+local oldIndex=mt.__index
+setreadonly(mt,false)
+mt.__namecall=newcclosure(function(...)
+local method=getnamecallmethod()
+local args={...}
+if tostring(method)=="FireServer"and args[2]=="newgrenade"then
+for i=1,#args[4]["frames"]do
+if i~=1 then
+args[4]["frames"][i]["p0"]=b
+end
+end
+args[4]["blowuptime"]=0
+end
+return oldNamecall(unpack(args))
+end)
+setreadonly(mt,true)
