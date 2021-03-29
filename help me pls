@@ -1,0 +1,919 @@
+repeat wait() until game:IsLoaded()
+
+local Environment = getgenv()
+for i,v in next, getconnections(game:GetService("ScriptContext").Error) do 
+    v:Disable()
+end
+
+--// Services 
+
+Environment.Players = game:GetService("Players")
+Environment.ReplicatedStorage = game:GetService("ReplicatedStorage")
+Environment.ReplicatedFirst = game:GetService("ReplicatedFirst") 
+Environment.RunService = game:GetService("RunService")
+Environment.UserInputService = game:GetService("UserInputService")
+Environment.TweenService = game:GetService("TweenService")
+Environment.Lighting = game:GetService("Lighting")
+Environment.Teams = game:GetService("Teams")
+Environment.CoreGui = game:GetService("CoreGui")
+Environment.HttpService = game:GetService("HttpService")
+Environment.TeleportService = game:GetService("TeleportService")
+Environment.Debris = game:GetService("Debris")
+Environment.StarterGui = game:GetService("StarterGui")
+Environment.MarketplaceService = game:GetService("MarketplaceService")
+local Environment = getgenv()
+
+--// Environment
+
+Environment.getupvalue = getupvalue or debug.getupvalue 
+Environment.setupvalue = setupvalue or debug.setupvalue 
+Environment.getproto = getproto or debug.getproto 
+Environment.setproto = setproto or debug.setproto 
+Environment.getinfo = getinfo or debug.getinfo 
+Environment.getconstant = getconstant or debug.getconstant 
+Environment.setconstant = setconstant or debug.setconstant 
+Environment.setmetatable = setmetatable or debug.setmetatable 
+Environment.getmetatable = getmetatable or debug.getmetatable
+Environment.traceback = debug.traceback
+Environment.getstack = getstack or debug.getstack 
+Environment.setstack = setstack or debug.setstack
+Environment.getupvalues = getupvalues or debug.getupvalues 
+Environment.getconstants = getconstants or debug.getconstants 
+Environment.getgc = getgc or get_gc_objects or debug.getgc 
+Environment.getreg = getreg or getregistry or debug.getregistry 
+Environment.setreadonly = setreadonly or function(tbl, bool) if bool then make_readonly(tbl) else make_writeable(tbl) end end
+Environment.get_thread_context = get_thread_context or getthreadcontext or getidentity or syn.get_thread_identity
+Environment.get_thread_identity = Environment.get_thread_context
+Environment.set_thread_context = set_thread_context or setthreadcontext or setidentity or syn.set_thread_identity
+Environment.set_thread_identity = Environment.set_thread_context
+Environment.hookfunction = hookfunction or hookfunc or detour_function
+Environment.islclosure = islclosure or is_l_closure
+Environment.checkcaller = checkcaller or is_protosmasher_caller
+Environment.isreadonly = isreadonly or is_readonly
+Environment.getscriptclosure = getscriptclosure or get_script_function or getscriptfunction
+Environment.getnilinstances = getnilinstances or get_nil_instances
+Environment.getcallingscript = getcallingscript or get_calling_script
+Environment.getloadedmodules = getloadedmodules or get_loaded_modules
+Environment.mousemoverel = mousemoverel or Input.MoveMouse 
+Environment.getconnections = getconnections or get_signal_connections
+Environment.request = http_request or request or (http and http.request) or (syn and syn.request)
+Environment.newcclosure = newcclosure or protect_function
+Environment.setsimulationradius = setsimulationradius or set_simulation_radius
+
+--// Math 
+
+Environment.cos = math.cos 
+Environment.sin = math.sin 
+Environment.asin = math.asin 
+Environment.atan2 = math.atan2 
+Environment.pi = math.pi 
+Environment.rad = math.rad 
+Environment.deg = math.deg 
+Environment.abs = math.abs 
+Environment.acos = math.acos
+Environment.atan = math.atan
+Environment.ceil = math.ceil 
+Environment.clamp = math.clamp 
+Environment.cosh = math.cosh 
+Environment.exp = math.exp 
+Environment.floor = math.floor 
+Environment.ldexp = math.ldexp 
+Environment.fmod = math.fmod
+Environment.frexp = math.frexp
+Environment.log = math.log 
+Environment.log10 = math.log10 
+Environment.max = math.max 
+Environment.min = math.min 
+Environment.modf = math.modf 
+Environment.noise = math.noise 
+Environment.pow = math.pow 
+Environment.random = math.random 
+Environment.randomseed = math.randomseed 
+Environment.round = math.round 
+Environment.sign = math.sign 
+Environment.sinh = math.sinh 
+Environment.sqrt = math.sqrt 
+Environment.tan = math.tan 
+Environment.tanh = math.tanh 
+Environment.huge = math.huge 
+
+
+--// Variables 
+
+Environment.player = Players.LocalPlayer 
+Environment.CurrentPlayers = {}
+
+for i,v in next, Players:GetPlayers() do 
+    table.insert(CurrentPlayers, v.Name)
+end
+
+Players.PlayerAdded:connect(function(plr)
+    table.insert(CurrentPlayers, plr.Name)
+end)
+
+Players.PlayerRemoving:connect(function(plr)
+    table.insert(CurrentPlayers, table.find(CurrentPlayers, plr.Name))
+end)
+
+--// Anti AFK 
+
+for i,v in next, getconnections(player.Idled) do 
+    v:Disable()
+end
+
+--// Functions 
+
+Environment.WalkSpeed = function(ws)
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = ws
+    end
+end
+
+Environment.JumpPower = function(jp)
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.JumpPower = jp
+    end
+end
+
+Environment.Notification = function(title, text, duration)
+    StarterGui:SetCore("SendNotification", {
+		Title = tostring(title);
+		Text = tostring(text);
+		Duration = tonumber(duration);
+	})
+end
+
+Environment.Teleport = function(pos)
+    local Type = typeof(pos)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        if Type == "CFrame" then 
+            player.Character.HumanoidRootPart.CFrame = pos
+        elseif Type == "Position" then 
+            player.Character.HumanoidRootPart.Position = pos
+        end
+    end
+end
+  local Remotes = {}
+
+        local Loader = require(game.ReplicatedStorage:WaitForChild("Fsys")).load
+
+        Player = player 
+
+        for i, v in pairs(getgc()) do
+            if type(v) == 'function' then
+                if getfenv(v).script == game:GetService("ReplicatedStorage").ClientModules.Core.RouterClient.RouterClient then
+                    local const = getconstants(v)
+                    if table.find(const, 'Infinite yield possible on remote ') then
+                        Remotes = getupvalue(v, 1)
+                        break
+                    end
+                end
+            end
+        end
+
+        do
+            local SetLocationC
+
+            for i, v in pairs(getgc()) do 
+                if type(v) == 'function' then
+                    if getfenv(v).script == game:GetService("ReplicatedStorage").ClientModules.Core.InteriorsM.InteriorsM then 
+                        if table.find(getconstants(v), "LocationAPI/SetLocation") then 
+                            SetLocationC = v 
+                            break
+                        end 
+                    end 
+                end 
+            end
+
+            local function SetLocation(a, b, c)
+                local k = get_thread_identity()
+                set_thread_identity(2)
+                SetLocationC(a,b,c)
+                set_thread_identity(k)
+            end
+
+            function isHome()
+                if workspace.HouseInteriors.blueprint:FindFirstChildOfClass('Model') then
+                    return workspace.HouseInteriors.blueprint:FindFirstChildOfClass('Model').Name
+                else
+                    return false
+                end
+            end
+
+            function isStore()
+                if workspace.Interiors:FindFirstChildOfClass('Model') then
+                    if (workspace.Interiors:FindFirstChildOfClass('Model').Name ~= 'MainMap') and (workspace.Interiors:FindFirstChildOfClass('Model').Name ~= 'Neighborhood') then
+                        return workspace.Interiors:FindFirstChildOfClass('Model').Name
+                    else
+                        return false
+                    end
+                else
+                    return false
+                end
+            end
+
+            function isMainMap()
+                if workspace.Interiors:FindFirstChildOfClass('Model') then
+                    if workspace.Interiors:FindFirstChildOfClass('Model').Name == 'MainMap' then
+                        return workspace.Interiors:FindFirstChildOfClass('Model').Name
+                    else
+                        return false
+                    end
+                else
+                    return false
+                end
+            end
+
+            function isNeighborhood()
+                if workspace.Interiors:FindFirstChildOfClass('Model') then
+                    if workspace.Interiors:FindFirstChildOfClass('Model').Name == 'Neighborhood' then
+                        return workspace.Interiors:FindFirstChildOfClass('Model').Name
+                    else
+                        return false
+                    end
+                else
+                    return false
+                end
+            end
+
+            function teleportToStore(Name)
+                if isStore() == Name then 
+                    return true 
+                end
+                SetLocation(Name, 'MainDoor', {
+                })
+                while isStore() ~= Name do wait() end 
+                if isHome() then
+                    return true
+                end
+                return false
+            end
+
+            function teleportToHome()
+                SetLocation('housing', 'MainDoor', {
+                    ['house_owner'] = Player
+                })
+                while not isHome() do 
+                    wait() 
+                end 
+                if isHome() then
+                    return true
+                end
+                return false
+            end
+            
+            function teleportToNeighborhood()
+                SetLocation('Neighborhood', 'MainDoor', {
+                })
+                while not isNeighborhood() do wait() end 
+                if isNeighborhood() then
+                    return true
+                end
+                return false
+            end
+
+            function teleportToMainMap()
+                SetLocation('MainMap', 'Neighborhood/MainDoor', {
+                })
+                while not isMainMap() do wait() end 
+                if isMainMap() then
+                    return true
+                end
+                return false
+            end
+
+            function findFurnitureFromType(Name)
+                teleportToHome()
+                for i, v in pairs(workspace.HouseInteriors.furniture:GetChildren()) do
+                    if v:FindFirstChildOfClass('Model') then
+                        if v:FindFirstChildOfClass('Model'):FindFirstChild('UseBlocks') then
+                            local Furniture = v:FindFirstChildOfClass('Model')
+                            if Furniture.UseBlocks:FindFirstChild('UseBlock') then
+                                if Furniture.UseBlocks:FindFirstChild('UseBlock'):FindFirstChild('Configuration') then 
+                                    if Furniture.UseBlocks:FindFirstChild('UseBlock'):FindFirstChild('Configuration'):FindFirstChild('use_id') then
+                                        if Furniture.UseBlocks:FindFirstChild('UseBlock'):FindFirstChild('Configuration'):FindFirstChild('use_id').Value == Name then
+                                            return v.Name
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+
+                return false
+            end
+        end
+        local Stores = {'CoffeeShop', 'Supermarket', 'PizzaPlace', 'ToyShop', 'Obbies', 'Neighborhood', 'CampingShop', 'AutoShop', 'Nursery', 'Cave', 'IceCream', 'PotionShop', 'SkyCastle', 'Hospital', 'HatShop', 'PetShop', 'School', 'BabyShop', 'HotSpringHouse', 'SafetyHub', 'DebugInterior'}
+
+for Name, Remote in pairs(debug.getupvalue(require(game:service'ReplicatedStorage'.Fsys).load("RouterClient").init, 4)) do
+    Remote.Name = Name
+end
+never = false
+heal = false
+Payout = false
+local Lib = loadstring(game:HttpGet('https://pastebin.com/raw/GaRF4FDA'))()
+local CategoryVariableHere= Lib:Category("Adopt me")
+CategoryVariableHere:Toggle("Baby Farm",function(State)
+    never = State
+local args = {
+    [1] = "Babies",
+    [2] = true
+}
+
+game:GetService("ReplicatedStorage").API["TeamAPI/ChooseTeam"]:InvokeServer(unpack(args))
+game:GetService('RunService').RenderStepped:connect(function()
+    if never then
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("hungry") then
+    
+local args = {
+    [1] = "hungry",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end 
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("sleepy") then
+local args = {
+    [1] = "sleepy",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("thirsty") then
+    local args = {
+    [1] = "thirsty",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("bored") then
+    local args = {
+    [1] = "bored",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("dirty") then
+    local args = {
+    [1] = "dirty",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("camping") then
+    local args = {
+    [1] = "camping",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("sick") then
+local args = {
+    [1] = "sick",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end    
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("school") then
+    local args = {
+    [1] = "school",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end
+if game:GetService("Players").LocalPlayer.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChild("hot_spring") then
+local args = {
+    [1] = "hot_spring",
+    [2] = 1
+}
+game:GetService("ReplicatedStorage").API["MonitorAPI/AddAdditive"]:FireServer(unpack(args)) end
+wait(1)
+local part = game:GetService("Players").LocalPlayer.PlayerGui.CheckApp:FindFirstChild("Frame")
+if part then
+	part.Visible = false
+end  end end) end)
+CategoryVariableHere:Toggle("Auto Payout :3",function(State)
+    Payout = State
+spawn(function()
+while Payout do wait(1)
+game:GetService("ReplicatedStorage").API["PayAPI/CashOut"]:InvokeServer() end end) end)
+CategoryVariableHere:Toggle("Heal others",function(State)
+    heal = State
+spawn(function()
+while heal do wait(2)
+game:GetService("ReplicatedStorage").API["MonitorAPI/HealWithDoctor"]:FireServer()
+end end) end)
+
+CategoryVariableHere:Button("Enable no pick up",function() 
+game:GetService("ReplicatedStorage").API["FamilyAPI/CreateFamily"]:InvokeServer() end)
+CategoryVariableHere:Button("Disable no pick up",function() 
+game:GetService("ReplicatedStorage").API["FamilyAPI/LeaveFamily"]:InvokeServer() end)
+CategoryVariableHere:Slider("WalkSpeed",16,16,100,function(Val) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Val end)
+CategoryVariableHere:Slider("JumpPower",16,16,100,function(Val) game.Players.LocalPlayer.Character.Humanoid.JumpPower = Val end)
+CategoryVariableHere:Button("Free Popcorn",function() 
+local args = {
+    [1] = "food",
+    [2] = "popcorn_vip",
+    [3] = {}
+}
+game:GetService("ReplicatedStorage").API["ShopAPI/BuyItem"]:InvokeServer(unpack(args))
+end)
+CategoryVariableHere:Button("Free MilkShake",function()
+local args = {
+    [1] = "food",
+    [2] = "chocolate_milk_vip",
+    [3] = {}
+}
+game:GetService("ReplicatedStorage").API["ShopAPI/BuyItem"]:InvokeServer(unpack(args))
+end)
+local CategoryVariableHere= Lib:Category("Auto Buy")
+CategoryVariableHere:Button("Buy Fossil_Egg",function()
+     local args = {
+    [1] = "pets",
+    [2] = "fossil_egg",
+    [3] = {}
+}
+game:GetService("ReplicatedStorage").API["ShopAPI/BuyItem"]:InvokeServer(unpack(args))
+end)
+CategoryVariableHere:Button("Cracked_Egg",function()
+    local args = {
+    [1] = "pets",
+    [2] = "cracked_egg",
+    [3] = {}
+}
+game:GetService("ReplicatedStorage").API["ShopAPI/BuyItem"]:InvokeServer(unpack(args))
+end)
+CategoryVariableHere:Button("Regular_Egg",function()
+    local args = {
+    [1] = "pets",
+    [2] = "regular_pet_egg",
+    [3] = {}
+}
+game:GetService("ReplicatedStorage").API["ShopAPI/BuyItem"]:InvokeServer(unpack(args))
+end)
+CategoryVariableHere:Button("Royal_Egg",function()
+    local args = {
+    [1] = "pets",
+    [2] = "royal_egg",
+    [3] = {}
+}
+game:GetService("ReplicatedStorage").API["ShopAPI/BuyItem"]:InvokeServer(unpack(args))
+end)
+ 
+ 
+local CategoryVariableHere= Lib:Category("Music")
+CategoryVariableHere:Button("Grab Bagdes",function()
+    local args = {
+    [1] = "miniworld"
+}
+game:GetService("ReplicatedStorage").API["MinigameAPI/FinishObby"]:FireServer(unpack(args))
+wait(0.5)
+local args = {
+    [1] = "coastal_climb"
+}
+game:GetService("ReplicatedStorage").API["MinigameAPI/FinishObby"]:FireServer(unpack(args))
+wait(0.5)
+local args = {
+    [1] = "shipwreck_bay"
+}
+game:GetService("ReplicatedStorage").API["MinigameAPI/FinishObby"]:FireServer(unpack(args))
+wait(0.5)
+local args = {
+    [1] = "ancient_ruins"
+}
+game:GetService("ReplicatedStorage").API["MinigameAPI/FinishObby"]:FireServer(unpack(args))
+wait(0.5)
+local args = {
+    [1] = "lonelypeak"
+}
+game:GetService("ReplicatedStorage").API["MinigameAPI/FinishObby"]:FireServer(unpack(args))
+wait(0.5)
+local args = {
+    [1] = "pyramid"
+}
+game:GetService("ReplicatedStorage").API["MinigameAPI/FinishObby"]:FireServer(unpack(args))
+wait(0.5)
+local args = {
+    [1] = "tinyisles"
+}
+game:GetService("ReplicatedStorage").API["MinigameAPI/FinishObby"]:FireServer(unpack(args)) end)
+CategoryVariableHere:Button("Y Fly",function()
+    local gogo1000 = 0
+local LP = game:service('Players').LocalPlayer
+local MOUSE = LP:GetMouse()
+ 
+MOUSE.KeyDown:connect(function(KEY)
+ if KEY:lower() == 'y' then
+    local LP = game:service('Players').LocalPlayer
+local MOUSE = LP:GetMouse()
+ 
+    gogo1000 = gogo1000 + 1
+    _G.FLYING = false
+ 
+local T = LP.Character.UpperTorso
+local CONTROL = {F = 0, B = 0, L = 0, R = 0}
+local lCONTROL = {F = 0, B = 0, L = 0, R = 0}
+local SPEED = 5
+ 
+ 
+ 
+local function FLY()
+    _G.FLYING = true
+    local BG = Instance.new('BodyGyro', T)
+    local BV = Instance.new('BodyVelocity', T)
+    BG.P = 9e4
+    BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+    BG.cframe = T.CFrame
+    BV.velocity = Vector3.new(0, 0.1, 0)
+    BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+ 
+ 
+    spawn(function()
+      repeat wait()
+        LP.Character.Humanoid.PlatformStand = true
+        if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 then
+          SPEED = 100
+        elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0) and SPEED ~= 0 then
+          SPEED = 0
+        end
+        if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 then
+          BV.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B) * 0.2, 0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+          lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+        elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and SPEED ~= 0 then
+          BV.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B) * 0.2, 0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+        else
+          BV.velocity = Vector3.new(0, 0.1, 0)
+        end
+        BG.cframe = game.Workspace.CurrentCamera.CoordinateFrame
+      until not _G.FLYING
+      CONTROL = {F = 0, B = 0, L = 0, R = 0}
+      lCONTROL = {F = 0, B = 0, L = 0, R = 0}
+      SPEED = 0
+      BG:destroy()
+      BV:destroy()
+      LP.Character.Humanoid.PlatformStand = false
+    end)
+  end
+ 
+  MOUSE.KeyDown:connect(function(KEY)
+    if KEY:lower() == 'w' then
+      CONTROL.F = 1
+    elseif KEY:lower() == 's' then
+      CONTROL.B = -1
+    elseif KEY:lower() == 'a' then
+      CONTROL.L = -1 
+    elseif KEY:lower() == 'd' then 
+      CONTROL.R = 1
+    end
+  end)
+ 
+  MOUSE.KeyUp:connect(function(KEY)
+    if KEY:lower() == 'w' then
+      CONTROL.F = 0
+    elseif KEY:lower() == 's' then
+      CONTROL.B = 0
+    elseif KEY:lower() == 'a' then
+      CONTROL.L = 0
+    elseif KEY:lower() == 'd' then
+      CONTROL.R = 0
+    end
+  end)
+ 
+ 
+ 
+ 
+  FLY()
+ 
+    if gogo1000 == 2 then
+    _G.FLYING = false
+    gogo1000 = 0
+ 
+    end
+ 
+ 
+ 
+end
+end) end)
+ 
+CategoryVariableHere:Button("T Noclip",function()
+        noclip = false
+game:GetService('RunService').Stepped:connect(function()
+if noclip then
+game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+end
+end)
+plr = game.Players.LocalPlayer
+mouse = plr:GetMouse()
+mouse.KeyDown:connect(function(key)
+ 
+if key == "t" then
+noclip = not noclip
+game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+end
+end) end)
+CategoryVariableHere:Button("Invis fling FE",function()
+local ch = game.Players.LocalPlayer.Character
+local prt=Instance.new("Model", workspace)
+local z1 =  Instance.new("Part", prt)
+z1.Name="Torso"
+z1.CanCollide = false
+z1.Anchored = true
+local z2  =Instance.new("Part", prt)
+z2.Name="Head"
+z2.Anchored = true
+z2.CanCollide = false
+local z3 =Instance.new("Humanoid", prt)
+z3.Name="Humanoid"
+z1.Position = Vector3.new(0,9999,0)
+z2.Position = Vector3.new(0,9991,0)
+ game.Players.LocalPlayer.Character=prt
+wait(5)
+game.Players.LocalPlayer.Character=ch
+wait(6)
+local plr = game.Players.LocalPlayer
+mouse = plr:GetMouse()
+local Hum = Instance.new("Humanoid")
+Hum.Parent = game.Players.LocalPlayer.Character
+local root =  game.Players.LocalPlayer.Character.HumanoidRootPart
+for i,v in pairs(plr.Character:GetChildren()) do if v ~= root and  v.Name ~= "Humanoid" then v:Destroy()
+end
+end
+workspace.CurrentCamera.CameraSubject = root
+local se = Instance.new("SelectionBox",root)
+se.Adornee = root
+game:GetService('RunService').Stepped:connect(function()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CanCollide = false
+end)
+game:GetService('RunService').RenderStepped:connect(function()
+game.Players.LocalPlayer.Character.HumanoidRootPart.CanCollide = false
+end)
+power = 999999 
+power = power*10
+wait(.1)
+local bambam = Instance.new("BodyThrust")
+bambam.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+bambam.Force = Vector3.new(power,0,power)
+bambam.Location = game.Players.LocalPlayer.Character.HumanoidRootPart.Position 
+local plr = game.Players.LocalPlayer
+local torso = root
+local flying = true
+local deb = true
+local ctrl = {f = 0, b = 0, l = 0, r = 0}
+local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+local speed = 50
+groot = root
+function Fly()
+local bg = Instance.new("BodyGyro", torso)
+bg.P = 9e4
+bg.maxTorque = Vector3.new(0, 0, 0)
+bg.cframe = torso.CFrame
+local bv = Instance.new("BodyVelocity", torso)
+bv.velocity = Vector3.new(0,0,0)
+bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+repeat wait()
+if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
+speed = 50
+local UserInputService = game:GetService("UserInputService")
+local shifting = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)
+if shifting == true then do
+speed = 45
+end
+end
+elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
+speed = 0
+if speed < 0 then
+speed = 0
+end
+end
+if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
+bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
+elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
+bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+else
+bv.velocity = Vector3.new(0,0.1,0)
+end
+until not flying
+ctrl = {f = 0, b = 0, l = 0, r = 0}
+lastctrl = {f = 0, b = 0, l = 0, r = 0}
+speed = 0
+bg:Destroy()
+bv:Destroy()
+end
+mouse.KeyDown:connect(function(key)
+if key:lower() == "e" then
+if flying then flying = false
+else
+flying = true
+Fly()
+end
+elseif key:lower() == "w" then
+ctrl.f = 1
+elseif key:lower() == "s" then
+ctrl.b = -1
+elseif key:lower() == "a" then
+ctrl.l = -1
+elseif key:lower() == "d" then
+ctrl.r = 1
+end
+end)
+mouse.KeyUp:connect(function(key)
+if key:lower() == "w" then
+ctrl.f = 0
+elseif key:lower() == "s" then
+ctrl.b = 0
+elseif key:lower() == "a" then
+ctrl.l = 0
+elseif key:lower() == "d" then
+ctrl.r = 0
+elseif key:lower() == "r" then
+end
+end)
+Fly()
+spawn(function()
+end) local saved = groot.Position
+local ch = game.Players.LocalPlayer.Character
+local prt=Instance.new("Model", workspace)
+local z1 =  Instance.new("Part", prt)
+z1.Name="Torso"
+z1.CanCollide = false
+z1.Anchored = true
+local z2  =Instance.new("Part", prt)
+z2.Name="Head"
+z2.Anchored = true
+z2.CanCollide = false
+local z3 =Instance.new("Humanoid", prt)
+z3.Name="Humanoid"
+z1.Position = Vector3.new(0,9999,0)
+z2.Position = Vector3.new(0,9991,0)
+game.Players.LocalPlayer.Character=prt
+wait(5)
+game.Players.LocalPlayer.Character=ch
+local poop = nil
+repeat wait() poop = game.Players.LocalPlayer.Character:FindFirstChild("Head") until poop ~= nil
+wait(1)	game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(saved)
+end)
+CategoryVariableHere:Button("Lag Switch F3",function()
+local a = false
+local b = settings()
+
+game:service'UserInputService'.InputEnded:connect(function(i)
+if i.KeyCode == Enum.KeyCode.F3 then
+a = not a
+b.Network.IncomingReplicationLag = a and 10 or 0
+end
+end) end) 
+local CategoryVariableHere= Lib:Category("Teleports")
+CategoryVariableHere:Button("GO HOME >:(",function()
+teleportToHome()
+            player.Character.HumanoidRootPart.CFrame = workspace.HouseInteriors.blueprint:FindFirstChildOfClass('Model').Doors.MainDoor.WorkingParts.TouchToEnter.CFrame:ToWorldSpace(CFrame.new(0, 0, -6)) end)
+CategoryVariableHere:Button("MainMap",function()
+teleportToMainMap()
+player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["Neighborhood/MainDoor"].WorkingParts.TouchToEnter.CFrame:ToWorldSpace(CFrame.new(0, 0, -6))
+end)
+
+CategoryVariableHere:Button("Neighborhood",function()
+teleportToMainMap()
+wait(1)
+local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["Neighborhood/MainDoor"].WorkingParts.TouchToEnter.CFrame
+end)
+CategoryVariableHere:Button("CoffeeShop",function()
+    teleportToMainMap()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["CoffeeShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("IceCreamShop",function()
+    teleportToMainMap()
+      local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["IceCream/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("PizzaPlace",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["PizzaPlace/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("AutoShop",function()
+    teleportToMainMap()
+local player = game.Players.LocalPlayer
+local character = player.Character
+character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["AutoShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("ToyShop",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["ToyShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("PetShop",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["PetShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("Hospital",function()
+    teleportToMainMap()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["Hospital/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("SafetyHub",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["SafetyHub/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("HatShop",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["HatShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("School",function()
+    teleportToMainMap()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["School/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("Nursery",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["Nursery/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("CampingShop",function()
+    teleportToMainMap()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["CampingShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("FarmShop",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["FarmShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("HotSpringHouse",function()
+    teleportToMainMap()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["HotSpringHouse/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("PotionShop",function()
+    teleportToMainMap()
+local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["PotionShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+CategoryVariableHere:Button("BabyShop",function()
+    teleportToMainMap()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["BabyShop/MainDoor"].WorkingParts.TouchToEnter.CFrame
+wait(0.5) game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)  
+CategoryVariableHere:Button("Park",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Static.Park.Lantern.Part.CFrame
+ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-397.500458, 17.5175095, -1736.22949)
+end)
+CategoryVariableHere:Button("Hot Spring",function()
+    teleportToMainMap()
+local player = game.Players.LocalPlayer
+local character = player.Character
+character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Static.HotSpring.Rocks.SpringsRock.CFrame
+ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-557.211365, 23.7716675, -1479.39185)
+end)
+CategoryVariableHere:Button("FirePlace",function()
+    teleportToMainMap()
+        local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Static.Campsite.Tent.PointyStick.CFrame
+ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-30.881052, 17.3096046, -1073.85095)
+end)
+CategoryVariableHere:Button("SkyCastle",function()
+    teleportToMainMap()
+ local player = game.Players.LocalPlayer
+    local character = player.Character
+    character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").Interiors.MainMap.Buildings.SkyCastle.Model.Part.CFrame
+ game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-220.594482, 343.087738, -1350.37256) wait(0.5)
+ game.Players.LocalPlayer.Character.Humanoid.Jump = true
+end)
+local CategoryVariableHere= Lib:Category("Credits and info")
+CategoryVariableHere:Label("Credits to a r q for ui liba")
+CategoryVariableHere:Label("Credits to DekuDimz#7960 aka me lol")
+CategoryVariableHere:Label("Teleports only work in main map .,.")
+Lib:Reload()
