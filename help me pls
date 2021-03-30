@@ -306,6 +306,61 @@ end
         end
         local Stores = {'CoffeeShop', 'Supermarket', 'PizzaPlace', 'ToyShop', 'Obbies', 'Neighborhood', 'CampingShop', 'AutoShop', 'Nursery', 'Cave', 'IceCream', 'PotionShop', 'SkyCastle', 'Hospital', 'HatShop', 'PetShop', 'School', 'BabyShop', 'HotSpringHouse', 'SafetyHub', 'DebugInterior'}
 
+local ClientData = Loader("ClientData")
+            
+            local Inventory = ClientData.get('inventory') or {}
+            
+            local Pets = Inventory.pets or {}
+            
+            local PetTable
+            local PetID 
+            local Pet
+
+            local PetsShowing = {}
+            local PetsListing = {}
+
+            for i, v in pairs(Pets) do
+                local Key = tostring(v['id']) .. ' - ' .. tostring(v['properties']['age']) .. ' years old'
+                PetsShowing[Key] = v
+                table.insert(PetsListing, Key)
+end
+  spawn(function()
+    game:GetService('RunService').RenderStepped:connect(function()
+        if PetFarming then
+        game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)  end end) end)
+      spawn(function()
+                    FarmAll = value 
+                    while FarmAll do
+                        wait()
+                        local Inventory = ClientData.get('inventory') or {}
+            
+                        local Pets = Inventory.pets or {}
+
+                        if Pets[tostring(PetID)] then
+                            if Pets[(PetID)]['properties']['age'] < 6 then
+                                --not change
+                            else
+                                for i, v in pairs(Pets) do 
+                                    if v['properties']['age'] < 6 then 
+                                        PetID = v.unique 
+                                    end
+                                end
+                            end
+                        else
+                            for i, v in pairs(Pets) do 
+                                if v['properties']['age'] < 6 then 
+                                    PetID = v.unique 
+                                end
+                            end
+                        end
+                    end
+                end)
+           
+
+            local PetFarmingStatus
+            local function updatePetFarmStatus(value)
+                
+            end
 for Name, Remote in pairs(debug.getupvalue(require(game:service'ReplicatedStorage'.Fsys).load("RouterClient").init, 4)) do
     Remote.Name = Name
 end
@@ -384,6 +439,244 @@ local part = game:GetService("Players").LocalPlayer.PlayerGui.CheckApp:FindFirst
 if part then
 	part.Visible = false
 end  end end) end)
+
+
+
+ local AilmentFurnitues = {}
+
+            local PetFarming = false
+CategoryVariableHere:Toggle("Pet autofarm",function(value)
+   if value then
+                    if PetTable then
+                       
+                        PetID = PetTable.unique
+
+                        AilmentFurnitues['generic_crib'] = nil 
+                        while not AilmentFurnitues['generic_crib'] do 
+                            wait()
+                            AilmentFurnitues['generic_crib'] = findFurnitureFromType('generic_crib')
+                            AilmentFurnitues['generic_shower'] = findFurnitureFromType('generic_shower')
+                        end
+                        Remotes["ToolAPI/Unequip"]:InvokeServer(PetID)
+                        Pet = Remotes["ToolAPI/Equip"]:InvokeServer(PetID)
+                        PetFarming = value
+                    else
+                       
+                        wait(1)
+                     
+                    end
+                else
+                    PetFarming = value
+              
+                end
+    
+
+           
+            
+            function holdPet()
+                while not Pet:FindFirstChild('BabyWeld') do 
+                    Remotes["AdoptAPI/HoldBaby"]:FireServer(Pet)
+                    wait() 
+                end
+            end
+            
+            function ejectPet()
+                while Pet:FindFirstChild('BabyWeld') do
+                    Remotes["AdoptAPI/EjectBaby"]:FireServer(Pet)
+                    wait() 
+                end
+            end
+            
+            local AilmentWorks
+
+            AilmentWorks = {
+                ['sleepy'] = function(AilmentButton)
+                    while AilmentButton.Parent == player.PlayerGui.AilmentsMonitorApp.Ailments do 
+                        wait()
+                        spawn(function()
+                            pcall(function()
+                                Remotes['HousingAPI/ActivateFurniture']:InvokeServer(Player, AilmentFurnitues['generic_crib'], 'UseBlock', {
+                                    ['cframe'] = CFrame.new(0, 0, 0)
+                                }, Pet)
+                            end)
+                        end)
+                    end
+            
+                    while wait() do 
+                        Remotes["ToolAPI/Unequip"]:InvokeServer(PetID)
+                        Pet = Remotes["ToolAPI/Equip"]:InvokeServer(PetID)
+                        if Pet then 
+                            if Pet.Parent then 
+                                break 
+                            end
+                        end
+                    end
+                end,
+                ['hungry'] = function(AilmentButton)
+                    Remotes["ShopAPI/BuyItem"]:InvokeServer('food', 'pizza', {})
+            
+                    Remotes["ToolAPI/BakeItem"]:InvokeServer()
+            
+                    while player.Character:FindFirstChild('PizzaTool') do wait() end
+                    while not player.Character:FindFirstChild('PizzaTool') do wait() end
+            
+                    local Inventory = ClientData.get('inventory') or {}
+            
+                    local Foods = Inventory.food or {}
+            
+                    local Pizza 
+            
+                    for i, v in pairs(Foods) do
+                        if v.id == 'pizza' then
+                            Pizza = v.unique    
+                            break
+                        end
+                    end
+                    if not Pizza then
+                        return
+                    end
+            
+                    Remotes["PetObjectAPI/CreatePetObject"]:InvokeServer("__Enum_PetObjectCreatorType_2", {
+                        ["unique_id"] = Pizza
+                    })
+            
+                    Remotes["PetAPI/ConsumeFoodItem"]:FireServer(Pizza)
+            
+                    repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                end,
+                ['thirsty'] = function(AilmentButton)
+                    Remotes["ShopAPI/BuyItem"]:InvokeServer('food', 'tea', {})
+            
+                    local Inventory = ClientData.get('inventory') or {}
+            
+                    local Foods = Inventory.food or {}
+            
+                    local Tea 
+            
+                    for i, v in pairs(Foods) do
+                        if v.id == 'tea' then
+                            Tea = v.unique    
+                            break
+                        end
+                    end
+                    if not Tea then
+                        return
+                    end
+            
+                    Remotes["PetObjectAPI/CreatePetObject"]:InvokeServer("__Enum_PetObjectCreatorType_2", {
+                        ["unique_id"] = Tea
+                    })
+            
+                    Remotes["PetAPI/ConsumeFoodItem"]:FireServer(Tea)
+            
+                    repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                end,
+                ['dirty'] = function(AilmentButton)
+                    while AilmentButton.Parent == player.PlayerGui.AilmentsMonitorApp.Ailments do 
+                        wait()
+                        spawn(function()
+                            pcall(function()
+                                Remotes['HousingAPI/ActivateFurniture']:InvokeServer(Player, AilmentFurnitues['generic_shower'], 'UseBlock', {
+                                    ['cframe'] = CFrame.new(0, 0, 0)
+                                }, Pet)
+                            end)
+                        end)
+                    end
+                    
+                    while wait() do 
+                        Remotes["ToolAPI/Unequip"]:InvokeServer(PetID)
+                        Pet = Remotes["ToolAPI/Equip"]:InvokeServer(PetID)
+                        if Pet then 
+                            if Pet.Parent then 
+                                break 
+                            end
+                        end
+                    end
+                end,
+                ['sick'] = function(AilmentButton)
+                    repeat wait() Remotes["MonitorAPI/HealWithDoctor"]:FireServer() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                end,
+                ['adoption_party'] = function(AilmentButton)
+                    teleportToStore('Nursery')
+                    repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                end,
+                ['school'] = function(AilmentButton)
+                    teleportToStore('School')
+               game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-276, 26, -1548)    
+                    repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                end,
+                ['hot_spring'] = function(AilmentButton)
+                    teleportToMainMap()
+                    Player.Character.HumanoidRootPart.CFrame = CFrame.new(workspace:WaitForChild("StaticMap"):WaitForChild("HotSpring"):WaitForChild("HotSpringOrigin").Position + Vector3.new(0, 5, 0))
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-557.211365, 23.7716675, -1479.39185)
+                    repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                end,
+                ['camping'] = function(AilmentButton)
+                    teleportToMainMap()
+                    Player.Character.HumanoidRootPart.CFrame = CFrame.new(workspace:WaitForChild("StaticMap"):WaitForChild("Campsite"):WaitForChild("CampsiteOrigin").Position + Vector3.new(0, 5, 0))
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-30.881052, 17.3096046, -1073.85095)
+                    repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                end,
+                ['bored'] = function(AilmentButton)
+                    teleportToMainMap()
+                    Player.Character.HumanoidRootPart.CFrame = CFrame.new(workspace:WaitForChild("StaticMap"):WaitForChild("Park"):WaitForChild("BoredAilmentTarget").Position + Vector3.new(0, 5, 0))
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-397.500458, 17.5175095, -1736.22949)
+                    repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                end,
+            }
+            
+            spawn(function()
+                while RunService.RenderStepped:Wait() do
+                    if PetFarming then
+                        player.Character.Humanoid:ChangeState(11)
+                    end
+                end
+            end)
+            
+            local RandomX = math.random(-500, 500)
+            local RandomZ = math.random(-500, 500)
+
+            spawn(function()
+                while RunService.RenderStepped:Wait() do
+                    if PetFarming then
+                        local Ailment = player.PlayerGui.AilmentsMonitorApp.Ailments:FindFirstChildOfClass('ImageButton') 
+                        if Ailment then
+                            local Name = Ailment.Name
+                    
+                            if AilmentWorks[Name] then
+                                
+                                AilmentWorks[Name](Ailment)
+                               
+                                wait(2)
+                            end
+                        end
+                        if Pet then 
+                            if Pet.Parent ~= game.Workspace.Pets then
+                                Remotes["ToolAPI/Unequip"]:InvokeServer(PetID)
+                                Pet = Remotes["ToolAPI/Equip"]:InvokeServer(PetID)
+                            end
+                        else
+                            Remotes["ToolAPI/Unequip"]:InvokeServer(PetID)
+                            Pet = Remotes["ToolAPI/Equip"]:InvokeServer(PetID)
+                        end
+                       
+                        wait(.1)
+                        player.Character.Humanoid.Sit = false
+                        
+                    end
+                end
+            end)
+
+       
+        
+      end)
+
+
+CategoryVariableHere:Dropdown("Select Pet",PetsListing,function(Selected)
+PetTable = PetsShowing[Selected]
+end)
+CategoryVariableHere:Toggle("Switch out full when fully grown",function(value)
+FarmAll = State end)
 CategoryVariableHere:Toggle("Auto Payout :3",function(State)
     Payout = State
 spawn(function()
@@ -915,5 +1208,5 @@ end)
 local CategoryVariableHere= Lib:Category("Credits and info")
 CategoryVariableHere:Label("Credits to a r q for ui liba")
 CategoryVariableHere:Label("Credits to DekuDimz#7960 aka me lol")
-CategoryVariableHere:Label("Teleports only work in main map .,.")
+CategoryVariableHere:Label("Credits to Biioop#7987 for pet farm help <<<333")
 Lib:Reload()
