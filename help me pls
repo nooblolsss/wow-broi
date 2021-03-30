@@ -328,39 +328,7 @@ end
     game:GetService('RunService').RenderStepped:connect(function()
         if PetFarming then
         game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)  end end) end)
-      spawn(function()
-                    FarmAll = value 
-                    while FarmAll do
-                        wait()
-                        local Inventory = ClientData.get('inventory') or {}
-            
-                        local Pets = Inventory.pets or {}
-
-                        if Pets[tostring(PetID)] then
-                            if Pets[(PetID)]['properties']['age'] < 6 then
-                                --not change
-                            else
-                                for i, v in pairs(Pets) do 
-                                    if v['properties']['age'] < 6 then 
-                                        PetID = v.unique 
-                                    end
-                                end
-                            end
-                        else
-                            for i, v in pairs(Pets) do 
-                                if v['properties']['age'] < 6 then 
-                                    PetID = v.unique 
-                                end
-                            end
-                        end
-                    end
-                end)
-           
-
-            local PetFarmingStatus
-            local function updatePetFarmStatus(value)
-                
-            end
+     
 for Name, Remote in pairs(debug.getupvalue(require(game:service'ReplicatedStorage'.Fsys).load("RouterClient").init, 4)) do
     Remote.Name = Name
 end
@@ -676,7 +644,36 @@ CategoryVariableHere:Dropdown("Select Pet",PetsListing,function(Selected)
 PetTable = PetsShowing[Selected]
 end)
 CategoryVariableHere:Toggle("Switch out full when fully grown",function(value)
-FarmAll = State end)
+FarmAll = State
+spawn(function()
+                    FarmAll = value 
+                    while FarmAll do
+                        wait()
+                        local Inventory = ClientData.get('inventory') or {}
+            
+                        local Pets = Inventory.pets or {}
+
+                        if Pets[tostring(PetID)] then
+                            if Pets[(PetID)]['properties']['age'] < 6 then
+                                --not change
+                            else
+                                for i, v in pairs(Pets) do 
+                                    if v['properties']['age'] < 6 then 
+                                        PetID = v.unique 
+                                    end
+                                end
+                            end
+                        else
+                            for i, v in pairs(Pets) do 
+                                if v['properties']['age'] < 6 then 
+                                    PetID = v.unique 
+                                end
+                            end
+                        end
+                    end
+                end)
+            
+end)
 CategoryVariableHere:Toggle("Auto Payout :3",function(State)
     Payout = State
 spawn(function()
