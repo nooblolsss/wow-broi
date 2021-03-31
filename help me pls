@@ -412,13 +412,23 @@ end  end end) end)
 
             local PetFarming = false
 CategoryVariableHere:Toggle("Pet autofarm",function(value)
+    
       spawn(function()
     game:GetService('RunService').RenderStepped:connect(function()
         if PetFarming then
         game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)  end end) end)
 if value then
                     if PetTable then
-                        PetID = PetTable.unique
+                        spawn(function()
+                        local Part = Instance.new('Part',workspace)
+Part.Name = "poopy"
+Part.Size = Vector3.new(55,0,55)
+Part.Anchored = true
+Part.Transparency = 1
+while wait() do
+    if PetFarming then
+Part.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,-5,0)  end end end)
+                    PetID = PetTable.unique
 
                         AilmentFurnitues['generic_crib'] = nil 
                         while not AilmentFurnitues['generic_crib'] do 
@@ -465,7 +475,7 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
             AilmentWorks = {
                 ['sleepy'] = function(AilmentButton)
                     while AilmentButton.Parent == player.PlayerGui.AilmentsMonitorApp.Ailments do 
-                        wait() teleportToHome()
+                        wait() teleportToHome() player.Character.HumanoidRootPart.CFrame = workspace.HouseInteriors.blueprint:FindFirstChildOfClass('Model').Doors.MainDoor.WorkingParts.TouchToEnter.CFrame:ToWorldSpace(CFrame.new(0, 0, -6))
                         spawn(function()
                             pcall(function()
                                 Remotes['HousingAPI/ActivateFurniture']:InvokeServer(Player, AilmentFurnitues['generic_crib'], 'UseBlock', {
@@ -476,8 +486,8 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
                     end
             
                     while wait() do 
-                        Remotes["ToolAPI/Unequip"]:InvokeServer(PetID)
-                        Pet = Remotes["ToolAPI/Equip"]:InvokeServer(PetID)
+                        game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
+                        Pet = game:GetService("ReplicatedStorage").API["ToolAPI/Equip"]:InvokeServer(PetID)
                         if Pet then 
                             if Pet.Parent then 
                                 break 
@@ -486,9 +496,9 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
                     end
                 end,
                 ['hungry'] = function(AilmentButton)
-                    Remotes["ShopAPI/BuyItem"]:InvokeServer('food', 'pizza', {})
+                    game:GetService("ReplicatedStorage").API["ShopAPI/BuyItem"]:InvokeServer('food', 'pizza', {})
             
-                    Remotes["ToolAPI/BakeItem"]:InvokeServer()
+                    game:GetService("ReplicatedStorage").API["ToolAPI/BakeItem"]:InvokeServer()
             
                     while player.Character:FindFirstChild('PizzaTool') do wait() end
                     while not player.Character:FindFirstChild('PizzaTool') do wait() end
@@ -509,16 +519,16 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
                         return
                     end
             
-                    Remotes["PetObjectAPI/CreatePetObject"]:InvokeServer("__Enum_PetObjectCreatorType_2", {
+                    game:GetService("ReplicatedStorage").API["PetObjectAPI/CreatePetObject"]:InvokeServer("__Enum_PetObjectCreatorType_2", {
                         ["unique_id"] = Pizza
                     })
             
-                    Remotes["PetAPI/ConsumeFoodItem"]:FireServer(Pizza)
+                    game:GetService("ReplicatedStorage").API["PetAPI/ConsumeFoodItem"]:FireServer(Pizza)
             
                     repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
                 end,
                 ['thirsty'] = function(AilmentButton)
-                    Remotes["ShopAPI/BuyItem"]:InvokeServer('food', 'tea', {})
+                    game:GetService("ReplicatedStorage").API["ShopAPI/BuyItem"]:InvokeServer('food', 'tea', {})
             
                     local Inventory = ClientData.get('inventory') or {}
             
@@ -536,11 +546,11 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
                         return
                     end
             
-                    Remotes["PetObjectAPI/CreatePetObject"]:InvokeServer("__Enum_PetObjectCreatorType_2", {
+                    game:GetService("ReplicatedStorage").API["PetObjectAPI/CreatePetObject"]:InvokeServer("__Enum_PetObjectCreatorType_2", {
                         ["unique_id"] = Tea
                     })
             
-                    Remotes["PetAPI/ConsumeFoodItem"]:FireServer(Tea)
+                    game:GetService("ReplicatedStorage").API["PetAPI/ConsumeFoodItem"]:FireServer(Tea)
             
                     repeat wait() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
                 end,
@@ -549,7 +559,7 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
                         wait()
                         spawn(function()
                             pcall(function()
-                                Remotes['HousingAPI/ActivateFurniture']:InvokeServer(Player, AilmentFurnitues['generic_shower'], 'UseBlock', {
+                               game:GetService("ReplicatedStorage").API['HousingAPI/ActivateFurniture']:InvokeServer(Player, AilmentFurnitues['generic_shower'], 'UseBlock', {
                                     ['cframe'] = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
                                 }, Pet)
                             end)
@@ -557,8 +567,8 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
                     end
                     
                     while wait() do 
-                        Remotes["ToolAPI/Unequip"]:InvokeServer(PetID)
-                        Pet = Remotes["ToolAPI/Equip"]:InvokeServer(PetID)
+                        game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
+                        Pet = game:GetService("ReplicatedStorage").API["ToolAPI/Equip"]:InvokeServer(PetID)
                         if Pet then 
                             if Pet.Parent then 
                                 break 
@@ -567,7 +577,7 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
                     end
                 end,
                 ['sick'] = function(AilmentButton)
-                    repeat wait() Remotes["MonitorAPI/HealWithDoctor"]:FireServer() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
+                    repeat wait() game:GetService("ReplicatedStorage").API["MonitorAPI/HealWithDoctor"]:FireServer() until AilmentButton.Parent ~= player.PlayerGui.AilmentsMonitorApp.Ailments
                 end,
                 ['adoption_party'] = function(AilmentButton)
                     teleportToStore('Nursery')
