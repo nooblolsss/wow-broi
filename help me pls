@@ -474,13 +474,14 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
 
             AilmentWorks = {
                 ['sleepy'] = function(AilmentButton)
+                    teleportToHome() player.Character.HumanoidRootPart.CFrame = workspace.HouseInteriors.blueprint:FindFirstChildOfClass('Model').Doors.MainDoor.WorkingParts.TouchToEnter.CFrame:ToWorldSpace(CFrame.new(0, 0, -6))
                     while AilmentButton.Parent == player.PlayerGui.AilmentsMonitorApp.Ailments do 
-                        wait() teleportToHome() player.Character.HumanoidRootPart.CFrame = workspace.HouseInteriors.blueprint:FindFirstChildOfClass('Model').Doors.MainDoor.WorkingParts.TouchToEnter.CFrame:ToWorldSpace(CFrame.new(0, 0, -6))
                         spawn(function()
                             pcall(function()
                                 Remotes['HousingAPI/ActivateFurniture']:InvokeServer(Player, AilmentFurnitues['generic_crib'], 'UseBlock', {
                                     ['cframe'] = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
                                 }, Pet)
+                            
                             end)
                         end)
                     end
