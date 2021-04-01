@@ -475,12 +475,12 @@ game:GetService("ReplicatedStorage").API["ToolAPI/Unequip"]:InvokeServer(PetID)
             AilmentWorks = {
                 ['sleepy'] = function(AilmentButton)
                     while AilmentButton.Parent == player.PlayerGui.AilmentsMonitorApp.Ailments do 
+                        wait() teleportToHome() 
                         spawn(function()
                             pcall(function()
-                                Remotes['HousingAPI/ActivateFurniture']:InvokeServer(Player, AilmentFurnitues['generic_crib'], 'UseBlock', {
-                                    ['cframe'] = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+                                game:GetService("ReplicatedStorage").API['HousingAPI/ActivateFurniture']:InvokeServer(Player, AilmentFurnitues['generic_crib'], 'UseBlock', {
+                                    ['cframe'] = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame 
                                 }, Pet)
-                            
                             end)
                         end)
                     end
