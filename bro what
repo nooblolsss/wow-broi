@@ -1,0 +1,471 @@
+noclip = not noclip
+game:GetService('RunService').Stepped:connect(function()
+    player = game.Players.LocalPlayer
+    character = player.Character
+
+    if noclip then
+        for _, v in pairs(character:GetDescendants()) do
+            pcall(function()
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end)
+        end
+    end
+
+    game:GetService("RunService").Stepped:wait()
+end)
+
+
+
+
+_G.CoinAutoFarmToggle = false
+_G.CoinGodMode = true
+
+local Player = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+local CoinTarget = nil
+local AutoFarming
+
+local accessories = {}
+function GodModeFunc()
+	if Player.Character then
+		if Player.Character:FindFirstChild("Humanoid") then
+			for _, accessory in pairs(Player.Character.Humanoid:GetAccessories()) do 
+				table.insert(accessories, accessory:Clone())
+			end
+			Player.Character.Humanoid.Name = "1"
+		end
+		local l = Player.Character["1"]:Clone()
+		l.Parent = Player.Character
+		l.Name = "Humanoid"; wait(0.1)
+		Player.Character["1"]:Destroy()
+		workspace.CurrentCamera.CameraSubject = Player.Character.Humanoid
+		for _, accessory in pairs(accessories) do 
+			Player.Character.Humanoid:AddAccessory(accessory)
+		end
+		Player.Character.Animate.Disabled = true
+		wait(0.1)
+		Player.Character.Animate.Disabled = false
+		--Tag:
+		local Tag = Instance.new("BoolValue", Player.Character)
+		Tag.Name = "GodMode"
+		Tag.Value = true
+		spawn(function()
+			local Jumping = false
+			local Died = false
+			Player.Character.Humanoid.Died:connect(function()
+				Died = true
+			end)
+			UIS.InputBegan:connect(function(i, process)
+				if i.KeyCode == Enum.KeyCode.LeftCtrl and not process and not Died then
+					Jumping = false
+					spawn(function()
+						repeat
+							Player.Character.Humanoid.Jump = false
+							game:GetService("RunService").RenderStepped:Wait()
+						until not Jumping or Died
+					end)
+				else
+					repeat
+						Player.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+						game:GetService("RunService").RenderStepped:Wait()
+					until not Jumping
+				end
+			end)
+			UIS.InputEnded:connect(function(i, process)
+				if i.KeyCode == Enum.KeyCode.LeftCtrl and not process and not Died then
+					Jumping = false
+				end
+			end)
+		end)
+	end
+end
+
+function GetClosestCoin()
+	local TargetDistance = 100
+	local Target
+	for i,v in pairs(workspace:GetDescendants()) do
+		if v.Name == "Coin_Server" and v:FindFirstChild("TouchInterest") and v.Name ~= "CollectedCoin" then
+			local mag = (Player.Character.HumanoidRootPart.Position - v.Position).magnitude
+			if mag < TargetDistance then
+				TargetDistance = mag
+				CoinTarget = v
+			end
+		end
+	end
+end
+
+--Anti Afk:
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+	vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+	wait(1)
+	vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+end)
+
+spawn(function()
+	while wait() do
+		pcall(function()
+			if _G.CoinAutoFarmToggle and not AutoFarming and Player.PlayerGui.MainGUI.Game.CashBag.Visible and not Player.PlayerGui.MainGUI.Game.CashBag.Full.Visible and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+				AutoFarming = true
+				if _G.CoinGodMode and not Player.Character:FindFirstChild("GodMode") then
+					GodModeFunc()
+				end
+				GetClosestCoin()
+				if CoinTarget ~= nil then
+					spawn(function()
+						game:GetService("TweenService"):Create(Player.Character.HumanoidRootPart, TweenInfo.new(1, Enum.EasingStyle.Linear), {CFrame = CFrame.new(Vector3.new(CoinTarget.Position.X, CoinTarget.Position.Y + 1.5, CoinTarget.Position.Z))}):Play()
+					end)
+					wait(.1)
+					for i,v in pairs(workspace:GetDescendants()) do
+						if v.Name == "Coin_Server" and v:FindFirstChild("TouchInterest") and v.Name ~= "CollectedCoin" then
+							local mag = (Player.Character.HumanoidRootPart.Position - v.Position).magnitude
+							if mag < 8 then
+								v.Position = Player.Character.HumanoidRootPart.Position
+							end
+						end
+					end
+				end
+				wait(2)
+				CoinTarget = nil
+				AutoFarming = false
+			end
+		end)
+	end
+	
+end)
+
+local Lib = loadstring(game:HttpGet('https://pastebin.com/raw/GaRF4FDA'))()
+local CategoryVariableHere= Lib:Category("MM2")
+CategoryVariableHere:Toggle("Coin Farm",function(State) 
+_G.CoinAutoFarmToggle = State  
+end)
+CategoryVariableHere:Toggle("Noclip",function(State)
+noclip = State end)
+CategoryVariableHere:Button("Invis",function()  
+local Character = game:GetService('Players').LocalPlayer.Character
+        local Clone = Character.LowerTorso.Root:Clone()
+        Character.LowerTorso.Root:Destroy()
+        Clone.Parent = Character.LowerTorso
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+wait(3)
+ local Character = game:GetService('Players').LocalPlayer.Character
+        local Clone = Character.LowerTorso.Root:Clone()
+        Character.LowerTorso.Root:Destroy()
+        Clone.Parent = Character.LowerTorso end)
+end)
+CategoryVariableHere:Button("Esp",function() 
+    while _G.on do
+    MobEsp = false
+MobLocations = {game:GetService("Workspace")} --add locations of the mobs in the workspace
+MobNames = {""} --add the names of the mobs
+ 
+PlayerESP = true
+ 
+plr = game.Players.LocalPlayer
+_G.on = true --set to false if you want to turn it off
+ 
+names = {}
+function isin(obj,tbl)
+	for a = 1,#tbl do
+		if obj == tbl[a] then
+			return true
+		end
+	end
+	return false
+end
+function test1(D)
+	local d = tonumber(string.sub(D,1,string.find(D,".",1,true) + 1))
+	return d
+end
+function Label(Part,Distance)
+	local MainName = Part.Parent.Name
+	local check = Part:FindFirstChild(MainName .. " Tracker")
+	if check then
+		destroyed = false
+		while not destroyed do
+			for i = 1,#names do
+				if names[i] == MainName then
+					table.remove(names,i)
+					destroyed = true
+					break
+				end
+			end
+			destroyed = true
+		end
+		check:Destroy()
+	end
+	local Gui = Instance.new("BillboardGui")
+	local Text = Instance.new("TextLabel")
+	if Distance ~= nil then
+		local assa,D = pcall(test1,Distance)
+		if D ~= nil and D then
+			D = tonumber(D)
+			table.insert(names,MainName)
+			Gui.Name = MainName.." Tracker"
+			Gui.Parent = Part
+			Gui.Adornee = Part
+			Gui.ExtentsOffsetWorldSpace = Vector3.new(0,3,0)
+			Gui.MaxDistance = 2500
+			Gui.Size = UDim2.new(0,200,0,50)
+			Gui.AlwaysOnTop = true
+			Text.Parent = Gui
+			Text.TextWrapped = true
+			Text.BackgroundTransparency = 1
+			Text.TextSize = 8
+			Text.Size = UDim2.new(0, 200, 0, 50)
+			Text.Font = Enum.Font.Legacy
+			if D ~= nil and D < 30 then
+				Text.TextColor3 = Color3.fromRGB(33, 231, 40)
+				Text.Text = Part.Parent.Name .. "\n Dist: " .. D
+			elseif D ~= nil and D < 100 then
+				Text.TextColor3 = Color3.fromRGB(228, 231, 34)
+				Text.Text = Part.Parent.Name .. "\n Dist: " .. D
+			elseif D ~= nil and D < 500 then
+				Text.TextColor3 = Color3.fromRGB(255, 140, 46)
+				Text.Text = Part.Parent.Name .. "\n Dist: " .. D
+			elseif D ~= nil and D < 2500 then
+				Text.TextColor3 = Color3.fromRGB(255, 0, 0)
+				Text.Text = Part.Parent.Name .. "\n Dist: " .. D
+			end
+		end
+	end
+end
+ 
+function Root()
+	plr = game.Players:FindFirstChild(game.Players.LocalPlayer.Name)
+	if plr then
+		local root = plr.Character:FindFirstChild("HumanoidRootPart")
+		if root then
+			return root
+		else
+			for i = 1,#names do
+				local check = game.Workspace:FindFirstChild(names[i] .. " Tracker",true)
+				if check then
+					table.remove(names,i)
+					check:Destroy()
+					break
+				end
+			end
+			game:GetService('RunService').Stepped:wait()
+			Root()
+		end
+	end
+end
+ 
+while _G.on do
+	game:GetService('RunService').Stepped:wait()
+	plr = game.Players.LocalPlayer
+	if MobEsp then
+		for iter = 1,#MobLocations do
+			local check = MobLocations[iter]:FindFirstChildOfClass("Model")
+			local check2 = MobLocations[iter]:FindFirstChildOfClass("Part")
+			if check or check2 then
+				for i,v in pairs(MobLocations[iter]:GetChildren()) do
+					if v.ClassName == "Model" or v.ClassName == "Part" and isin(v.Name,MobNames) == true then
+						local placed = false
+						for a,b in pairs(v:GetChildren()) do
+							if b.Name == "Head" and b.ClassName == "Part" and not placed and isin(v.Name,MobNames) == true then
+								placed = true
+								Label(b,(Root().Position - b.Position).Magnitude)
+							elseif b.Name == "UpperTorso" and b.ClassName == "Part" and not placed and isin(v.Name,MobNames) == true then
+								placed = true
+								Label(b,(Root().Position - b.Position).Magnitude)
+							elseif b.Name == "Torso" and b.ClassName == "Part" and not placed and isin(v.Name,MobNames) == true then
+								placed = true
+								Label(b,(Root().Position - b.Position).Magnitude)
+							elseif b.ClassName == "Part" and not placed and isin(v.Name,MobNames) == true then
+								placed = true
+								repeat wait() until game.Players.LocalPlayer.Character ~= nil
+								Label(b,(Root().Position - b.Position).Magnitude)
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	if PlayerESP then
+		for z,d in pairs(game.Players:GetChildren()) do
+			if d.Character ~= nil and d ~= plr then
+				local prt = d.Character:FindFirstChildOfClass("Part")
+				if prt then
+					local placed = false
+					for j,g in pairs(d.Character:GetChildren()) do
+						if g.Name == "Head" and not placed then
+							placed = true
+							Label(g,(Root().Position - g.Position).Magnitude)
+						elseif g.Name == "UpperTorso" and not placed then
+							placed = true
+							Label(g,(Root().Position - g.Position).Magnitude)
+						elseif g.Name == "Torso" and not placed then
+							placed = true
+							Label(g,(Root().Position - g.Position).Magnitude)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+while #names > 0 do
+	game:GetService('RunService').Stepped:wait()
+	for i = 1,#names do
+		local check = game.Workspace:FindFirstChild(names[i] .. " Tracker",true)
+		if check then
+			table.remove(names,i)
+			check:Destroy()
+			break
+		end
+	end
+end end
+ end)
+CategoryVariableHere:Button("GodMode",function()
+local player = game.Players.LocalPlayer
+if player.Character then
+if player.Character:FindFirstChild("Humanoid") then
+player.Character.Humanoid.Name = "1"
+end
+local l = player.Character["1"]:Clone()
+l.Parent = player.Character
+l.Name = "Humanoid"; wait(0.1)
+player.Character["1"]:Destroy()
+workspace.CurrentCamera.CameraSubject = player.Character.Humanoid
+player.Character.Animate.Disabled = true; wait(0.1)
+player.Character.Animate.Disabled = false
+end
+ end)
+CategoryVariableHere:Button("T NoClip",function() 
+noclip = false
+game:GetService('RunService').Stepped:connect(function()
+if noclip then
+game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+end
+end)
+plr = game.Players.LocalPlayer
+mouse = plr:GetMouse()
+mouse.KeyDown:connect(function(key)
+
+if key == "t" then
+noclip = not noclip
+game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+end
+end) end)
+CategoryVariableHere:Button("Y Fly",function()
+    local gogo1000 = 0
+local LP = game:service('Players').LocalPlayer
+local MOUSE = LP:GetMouse()
+ 
+MOUSE.KeyDown:connect(function(KEY)
+ if KEY:lower() == 'y' then
+    local LP = game:service('Players').LocalPlayer
+local MOUSE = LP:GetMouse()
+ 
+    gogo1000 = gogo1000 + 1
+    _G.FLYING = false
+ 
+local T = LP.Character.UpperTorso
+local CONTROL = {F = 0, B = 0, L = 0, R = 0}
+local lCONTROL = {F = 0, B = 0, L = 0, R = 0}
+local SPEED = 5
+ 
+ 
+ 
+local function FLY()
+    _G.FLYING = true
+    local BG = Instance.new('BodyGyro', T)
+    local BV = Instance.new('BodyVelocity', T)
+    BG.P = 9e4
+    BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+    BG.cframe = T.CFrame
+    BV.velocity = Vector3.new(0, 0.1, 0)
+    BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+ 
+ 
+    spawn(function()
+      repeat wait()
+        LP.Character.Humanoid.PlatformStand = true
+        if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 then
+          SPEED = 50
+        elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0) and SPEED ~= 0 then
+          SPEED = 0
+        end
+        if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 then
+          BV.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B) * 0.2, 0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+          lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+        elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and SPEED ~= 0 then
+          BV.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B) * 0.2, 0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+        else
+          BV.velocity = Vector3.new(0, 0.1, 0)
+        end
+        BG.cframe = game.Workspace.CurrentCamera.CoordinateFrame
+      until not _G.FLYING
+      CONTROL = {F = 0, B = 0, L = 0, R = 0}
+      lCONTROL = {F = 0, B = 0, L = 0, R = 0}
+      SPEED = 0
+      BG:destroy()
+      BV:destroy()
+      LP.Character.Humanoid.PlatformStand = false
+    end)
+  end
+ 
+  MOUSE.KeyDown:connect(function(KEY)
+    if KEY:lower() == 'w' then
+      CONTROL.F = 1
+    elseif KEY:lower() == 's' then
+      CONTROL.B = -1
+    elseif KEY:lower() == 'a' then
+      CONTROL.L = -1 
+    elseif KEY:lower() == 'd' then 
+      CONTROL.R = 1
+    end
+  end)
+ 
+  MOUSE.KeyUp:connect(function(KEY)
+    if KEY:lower() == 'w' then
+      CONTROL.F = 0
+    elseif KEY:lower() == 's' then
+      CONTROL.B = 0
+    elseif KEY:lower() == 'a' then
+      CONTROL.L = 0
+    elseif KEY:lower() == 'd' then
+      CONTROL.R = 0
+    end
+  end)
+ 
+ 
+ 
+ 
+  FLY()
+ 
+    if gogo1000 == 2 then
+    _G.FLYING = false
+    gogo1000 = 0
+ 
+    end
+ 
+ 
+ 
+end
+end) end)
+
+
+CategoryVariableHere:Button("Go to Sheriff",function()
+for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+		if v.Character:FindFirstChild("Revolver") or v.Backpack:FindFirstChild("Revolver") or v.Character:FindFirstChild("Gun") or v.Backpack:FindFirstChild("Gun") then
+			game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 3, 0)
+		end
+end end)
+CategoryVariableHere:Button("Go to Murderer",function()
+     for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+		if v.Character:FindFirstChild("Knife") or v.Backpack:FindFirstChild("Knife") then
+			game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 3, 0)
+		end
+	end end)
+local CategoryVariableHere= Lib:Category("Credits")
+CategoryVariableHere:Label("Credits to a r q for ui liba")
+CategoryVariableHere:Label("Credits to DekuDimz#7960 aka me lol")
+CategoryVariableHere:Label("Credit to Doggo for coin farm")
+Lib:Reload()
