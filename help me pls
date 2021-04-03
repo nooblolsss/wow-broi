@@ -1,5 +1,3 @@
-
-
 repeat wait() until game:IsLoaded()
 
 local Environment = getgenv()
@@ -1141,6 +1139,7 @@ teleportToHome()
 CategoryVariableHere:Button("MainMap",function()
 teleportToMainMap()
 player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Interiors.MainMap.Doors["Neighborhood/MainDoor"].WorkingParts.TouchToEnter.CFrame:ToWorldSpace(CFrame.new(0, 0, -6))
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-247.35408, 17.3820152, -1518.88879)
 end)
 
 CategoryVariableHere:Button("Neighborhood",function()
@@ -1294,5 +1293,5 @@ end)
 local CategoryVariableHere= Lib:Category("Credits and info")
 CategoryVariableHere:Label("Credits to a r q for ui liba")
 CategoryVariableHere:Label("Credits to DekuDimz#7960 aka me lol")
-CategoryVariableHere:Label("Credits to Biioop#7987 for pet farm help and teleports <<<333")
+CategoryVariableHere:Label("Credits to Biioop#7987 for pet farm help <<<333")
 Lib:Reload()
