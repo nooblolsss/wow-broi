@@ -253,7 +253,7 @@ else
     debug.setupvalue(Raycast.CastGeometryAndEnemies, 2, workspace.Terrain)
 end
 
-local library = loadstring(game.HttpGet(game, 'https://pastebin.com/raw/nwVvsxTQ'))()
+local library = loadstring(game.HttpGet(game, 'https://raw.githubusercontent.com/1201for/V.G-Hub/main/IMRETARDED2'))()
 local w1 = library:Window('Bad Business') -- Text
 w1:Toggle('silentaim', 'aim', false, function(toggled)
    shared.SilentAim.Enabled = toggled
