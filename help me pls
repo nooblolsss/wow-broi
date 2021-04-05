@@ -333,7 +333,7 @@ Payout = false
 for Name, Remote in pairs(debug.getupvalue(require(game:service'ReplicatedStorage'.Fsys).load("RouterClient").init, 4)) do
     Remote.Name = Name
 end
-local Lib = loadstring(game:HttpGet('https://pastebin.com/raw/GaRF4FDA'))()
+local Lib = loadstring(game:HttpGet('https://raw.githubusercontent.com/1201for/V.G-Hub/main/IMRETARDED'))()
 local CategoryVariableHere= Lib:Category("Adopt me")
 CategoryVariableHere:Toggle("Baby Farm",function(State)
     never = State
