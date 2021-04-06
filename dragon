@@ -325,6 +325,7 @@ CategoryVariableHere:Button("uninvis",function()
  local Character = game:GetService('Players').LocalPlayer.Character
         Character.UpperTorso:Destroy() end)
 CategoryVariableHere:Button("loop go to eggs",function()
+spawn(function()
 pcall(function()
 while wait(1) do
 for i,v in pairs(Workspace:GetDescendants()) do
@@ -333,8 +334,10 @@ for i,v in pairs(Workspace:GetDescendants()) do
   end
 
 
-end end end) end)
+end end end) end) end)
 CategoryVariableHere:Button("Loop auto pick up eggs might break",function()
+spawn(function()
+pcall(function()
 while wait(1) do
 local plr = game.Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -346,7 +349,7 @@ for i,v in pairs(Workspace:GetDescendants()) do
     wait()
     GetEggRemote:FireServer(v.Parent)
   end
-end end end)
+end end end) end) end)
 
 
 
