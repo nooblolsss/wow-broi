@@ -1,5 +1,4 @@
 if game.PlaceId == 5777228223 then
-       
 game:GetService("Workspace").Decorational.Trees:remove()
 end
 local Meta = getrawmetatable(game)
@@ -30,7 +29,7 @@ game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
 game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 23
 local Lib = loadstring(game:HttpGet('https://pastebin.com/raw/GaRF4FDA'))()
 local CategoryVariableHere= Lib:Category("Dragon adventures")
-
+if game.PlaceId == 3475397644 then
 CategoryVariableHere:Button("Fast levels",function()
 
 game:GetService('RunService').RenderStepped:connect(function()
@@ -85,6 +84,7 @@ local args = {
 
 game:GetService("Players").LocalPlayer.Function:InvokeServer(unpack(args))
 end)
+end
 CategoryVariableHere:Toggle("Autosell",function(State) 
 sex = State
 while sex do wait()
