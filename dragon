@@ -350,36 +350,94 @@ end end end)
 
 
 
-if game.PlaceId == 3475419198 then
-CategoryVariableHere:Button("egg of nature ",function()
+CategoryVariableHere:Button("all egg events go to right world pls ",function()
 pcall(function()
 for i,v in pairs(Workspace:GetDescendants()) do
-  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540319837" and v.Name ~= "Egg" then
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540321038" and v.Name ~= "Egg" then
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
   end
-end  end) end) end
-
-
-
-
-if game.PlaceId == 3475419198 then
-CategoryVariableHere:Button("egg of danger ",function()
+end  end) 
 pcall(function()
 for i,v in pairs(Workspace:GetDescendants()) do
-  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320264" and v.Name ~= "Egg" then
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540321752" and v.Name ~= "Egg" then
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
   end
-end  end) end) end
-
-
-if game.PlaceId == 3487210751 then
-CategoryVariableHere:Button("egg of Chaos ",function()
+end  end) 
 pcall(function()
 for i,v in pairs(Workspace:GetDescendants()) do
   if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320456" and v.Name ~= "Egg" then
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
   end
-end  end) end) end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320264" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540321882" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320882" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540321405" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540321624" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320589" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540319837" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540321228" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540322012" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320730" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end  end) 
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540322203" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end 
+end)
+end)
+
   
 if game.PlaceId == 5777228223 then
 CategoryVariableHere:Toggle("easte farm",function(State) 
