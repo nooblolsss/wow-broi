@@ -1148,7 +1148,7 @@ CategoryVariableHere:Button("Rejoin",function()
     local ts = game:GetService("TeleportService")
 local p = game:GetService("Players").LocalPlayer
 ts:Teleport(game.PlaceId, p) end)
-CategoryVariableHere:Button("Rejoin",function()
+CategoryVariableHere:Button("Super useless button",function()
     while wait() do
 game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Sit = true
 end end)
