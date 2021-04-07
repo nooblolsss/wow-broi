@@ -13,6 +13,7 @@ player = game.Players.LocalPlayer
             end)
         end
     game:GetService("RunService").Stepped:wait()
+    game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
 end
 end)
 
