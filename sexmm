@@ -69,7 +69,7 @@ function GodModeFunc()
 					end)
 				else
 					repeat
-						Player.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+					
 						game:GetService("RunService").RenderStepped:Wait()
 					until not Jumping
 				end
