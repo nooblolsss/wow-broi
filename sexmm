@@ -1,3 +1,9 @@
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("Part") and  v.Name ~= "Part" then
+    v.CanCollide =false
+  end
+end end)
 noclip = false
 game:GetService('RunService').Stepped:connect(function()
 if noclip then
@@ -69,7 +75,7 @@ function GodModeFunc()
 					end)
 				else
 					repeat
-					
+						
 						game:GetService("RunService").RenderStepped:Wait()
 					until not Jumping
 				end
@@ -145,18 +151,36 @@ end)
 CategoryVariableHere:Toggle("Noclip",function(State)
 noclip = State end)
 CategoryVariableHere:Button("Invis",function()  
+local Player = game.Players.LocalPlayer
+local savepos = Player.Character.HumanoidRootPart.CFrame
+
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-85.1800766, 137.657455, -58.091156)
+wait(0.5)
 local Character = game:GetService('Players').LocalPlayer.Character
-        local Clone = Character.LowerTorso.Root:Clone()
-        Character.LowerTorso.Root:Destroy()
-        Clone.Parent = Character.LowerTorso
+local Clone = Character.LowerTorso.Root:Clone()
+Character.LowerTorso.Root:Destroy()
+Clone.Parent = Character.LowerTorso
+wait(0.5)
+
+Player.Character.HumanoidRootPart.CFrame = savepos
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
 wait(3)
- local Character = game:GetService('Players').LocalPlayer.Character
-        local Clone = Character.LowerTorso.Root:Clone()
-        Character.LowerTorso.Root:Destroy()
-        Clone.Parent = Character.LowerTorso end)
-end)
+local Player = game.Players.LocalPlayer
+local savepos = Player.Character.HumanoidRootPart.CFrame
+
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-85.1800766, 137.657455, -58.091156)
+wait(0.5)
+local Character = game:GetService('Players').LocalPlayer.Character
+local Clone = Character.LowerTorso.Root:Clone()
+Character.LowerTorso.Root:Destroy()
+Clone.Parent = Character.LowerTorso
+wait(0.5)
+
+Player.Character.HumanoidRootPart.CFrame = savepos 
+  end) end) 
+
+
 CategoryVariableHere:Button("Esp",function() 
     while _G.on do
     MobEsp = false
