@@ -1,6 +1,7 @@
 noclip = false
 game:GetService('RunService').Stepped:connect(function()
 if noclip then
+game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
 player = game.Players.LocalPlayer
     character = player.Character
 
@@ -13,7 +14,7 @@ player = game.Players.LocalPlayer
             end)
         end
     game:GetService("RunService").Stepped:wait()
-    game.Players.LocalPlayer.Character.Humanoid:ChangeState(11)
+    
 end
 end)
 
