@@ -1143,11 +1143,15 @@ end
 -- If you'd like to use a script before server hopping (Like a Automatic Chest collector you can put the Teleport() after it collected everything.
 Teleport()
 end)
+
 CategoryVariableHere:Button("Rejoin",function()
     local ts = game:GetService("TeleportService")
 local p = game:GetService("Players").LocalPlayer
 ts:Teleport(game.PlaceId, p) end)
-
+CategoryVariableHere:Button("Rejoin",function()
+    while wait() do
+game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Sit = true
+end end)
 
 local CategoryVariableHere= Lib:Category("World Teleports")
 CategoryVariableHere:Button("Lobby",function()
