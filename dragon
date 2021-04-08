@@ -1,88 +1,90 @@
-local Staff = {
+local annoying = {
+    
+    
+    
 "EtiTheSpirit",
 "seliso",
-"EgoMoose"
-"StudioBroke"
+"EgoMoose",
+"StudioBroke",
 
-"Erythia"
+"Erythia",
 
-"VaIorus"
+"VaIorus",
 
-"Lyftias"
+"Lyftias",
 
-"Joylessly"
+"Joylessly",
 
-"SniperGhostGame"
+"SniperGhostGame",
 
-"144hertz"
+"144hertz",
 
-"Domeboybeene"
+"Domeboybeene",
 
-"Dapvhir"
+"Dapvhir",
 
-"kipp4h"
+"kipp4h",
 
-"RivaillePhoenix"
+"RivaillePhoenix",
 
-"tomspell"
+"tomspell",
 
-"SonarBanAppeal"
+"SonarBanAppeal",
 
-"Formeru"
+"Formeru",
 
-"LadyAnou"
+"LadyAnou",
 
-"A20III"
+"A20III",
 
-"imoerus"
+"imoerus",
 
-"zhsiia"
+"zhsiia",
 
-"Teletrances"
+"Teletrances",
 
-"pixelyeajin220"
+"pixelyeajin220",
 
-"Moonstur"
+"Moonstur",
 
-"ffreakkshow"
+"ffreakkshow",
 
-"binderboard"
+"binderboard",
 
-"Kyrobii"
+"Kyrobii",
 
-"Sa1tyPick1e"
+"Sa1tyPick1e",
 
-"andiill"
+"andiill",
 
-"Artistrias"
+"Artistrias",
 
-"baiIeyu"
+"baiIeyu",
 
-"NauticaElurra"
+"NauticaElurra",
 
-"HoloLxve"
+"HoloLxve",
 
-"sinnerific"
+"sinnerific",
 
-"AeroStormz"
+"AeroStormz",
 
-"PoiFall"
+"PoiFall",
 
-"SussiSuski"
+"SussiSuski",
 
-"r0adkilled"
+"r0adkilled",
 
 
-"DekDimz"
+"DekDimz",
 
-"Ioserman1201"
 
 }
-
-while wait(1) do
-table.foreach(Staff,function(a,b)
-for _,v in pairs(game:GetService("Players"):GetChildren()) do
-if v.Name == b then
+ -- you can add more players by doing {"Player1", "Player2"} etc
+plr = game:GetService("Players")
+game.Players.PlayerAdded:Connect(function(plr)
+for i, v in pairs(annoying) do
+if plr.Name == v then
 local PlaceID = game.PlaceId
 local AllIDs = {}
 local foundAnything = ""
@@ -157,7 +159,6 @@ Teleport()
 end
 end
 end)
-end
 if game.PlaceId == 5777228223 then
 game:GetService("Workspace").Decorational.Trees:remove()
 end
