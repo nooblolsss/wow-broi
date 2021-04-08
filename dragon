@@ -597,6 +597,13 @@ for i,v in pairs(Workspace:GetDescendants()) do
   end
 end 
 end)
+pcall(function()
+for i,v in pairs(Workspace:GetDescendants()) do
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320730" and v.Name ~= "Egg" then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+  end
+end 
+end)
 end)
 
   
