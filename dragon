@@ -1,3 +1,4 @@
+
 local annoying = {
     
     
@@ -174,40 +175,18 @@ Meta.__newindex = newcclosure(function(t, k, ...)
    NewIndex(t, k, ...)
 end)
 setreadonly(Meta, true)
-nigger = false
-never  = false
-nigger1 = false
-nigger2 = false
-nigger3= false
-nigger4 =false
-nigger5= false
-nigger6= false
-nigger7= false
-nigger8= false
-nigger9= false
-nigger10= false
+
 game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
 game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 23
 local Lib = loadstring(game:HttpGet('https://pastebin.com/raw/GaRF4FDA'))()
 local CategoryVariableHere= Lib:Category("Dragon adventures")
 if game.PlaceId == 3475397644 then
 CategoryVariableHere:Button("Fast levels",function()
-
-game:GetService('RunService').RenderStepped:connect(function()
- 
-local args = {
-    [1] = "Craft",
-    [2] = "Plant_Apple"
-}
-game:GetService("Players").LocalPlayer.Function:InvokeServer(unpack(args))
-local args = {
-    [1] = "SalvageBuilding",
-    [2] = {
-        [1] = "Plant_Apple",
-        [2] = 1
-    }
-}
-game:GetService("Players").LocalPlayer.Remote:FireServer(unpack(args)) end)
+print "disabled"
+game.StarterGui:SetCore("SendNotification", {
+Title = "Warning"; 
+Text = "Disabled"; 
+})
  end)
 CategoryVariableHere:Button("Money Method  apple plants needed",function()
 while wait(.1) do
@@ -512,6 +491,7 @@ end end end)
 
 
 CategoryVariableHere:Button("all egg events go to right world pls ",function()
+while wait(1) do
 pcall(function()
 for i,v in pairs(Workspace:GetDescendants()) do
   if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540321038" and v.Name ~= "Egg" then
@@ -603,7 +583,7 @@ for i,v in pairs(Workspace:GetDescendants()) do
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
   end
 end 
-end)
+end) end
 end)
 
   
