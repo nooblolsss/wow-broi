@@ -490,7 +490,7 @@ end end end)
 
 
 CategoryVariableHere:Button("all egg events go to right world pls ",function()
-
+while wait(1) do
 pcall(function()
 for i,v in pairs(Workspace:GetDescendants()) do
   if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540321038" and v.Name ~= "Egg" then
@@ -578,35 +578,29 @@ end
 end)
 pcall(function()
 for i,v in pairs(Workspace:GetDescendants()) do
-  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320882" and v.Name ~= "Egg" then
+  if v:IsA("MeshPart") and v.MeshId == "rbxassetid://6540320730" and v.Name ~= "Egg" then
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
   end
-  end
-  end)
+end 
+end) end
 end)
 
   
 if game.PlaceId == 5777228223 then
 CategoryVariableHere:Toggle("easte farm",function(State) 
-_G.Farming = State
+
  local Character = game:GetService('Players').LocalPlayer.Character
         Character.LowerTorso:Destroy() game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-110.796242, 129.839752, 135.473373)
-function farm()
-if game:GetService("Workspace").HarvestZones.Fruit.Drops:FindFirstChild("Small") and game:GetService("Workspace").HarvestZones.Fruit.Drops.Small:FindFirstChild("EasterPlantSmall") then
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").HarvestZones.Fruit.Drops.Small.EasterPlantSmall.CFrame 
-wait(0.5)
-fireclickdetector(game:GetService("Workspace").HarvestZones.Fruit.Drops.Small.ClickDetector)
-wait(8)
-else 
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").HarvestZones.Fruit.Drops.Medium.EasterPlantMedium.CFrame 
-wait(0.5)
-fireclickdetector(game:GetService("Workspace").HarvestZones.Fruit.Drops.Medium.ClickDetector)
-wait(32)
-end end
+while wait() do
+spawn(function()
+for i,v in pairs(game:GetService("Workspace").HarvestZones.Fruit.Drops.Small:GetDescendants()) do
+  if v:IsA("MeshPart")  then
+   game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =v.CFrame  end end
 
-while _G.Farming do
-farm()
-end
+wait(1)
+fireclickdetector(game:GetService("Workspace").HarvestZones.Fruit.Drops.Small.ClickDetector)
+end)
+wait(8) end 
  end) end
  
 if game.PlaceId == 5777228223 then
@@ -685,7 +679,7 @@ pcall(function()
         Character.LowerTorso:Destroy() game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-110.796242, 129.839752, 135.473373)
 while nigger1 do 
 
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1094.25134, 121.841377, -129.758102) wait(1)
+
 if game:GetService("Workspace").HarvestZones.Fruit.Drops.Small["Meshes/FruitTree_LobbyTree"] then
 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").HarvestZones.Fruit.Drops.Small["Meshes/FruitTree_LobbyTree"].CFrame 
 wait(0.5)
