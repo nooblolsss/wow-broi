@@ -273,6 +273,27 @@ end)
 w1:Toggle('WallBang', 'aim', false, function(toggled)
 shared.WallbangEnabled = toggled
 end)
+w1:Button('Esp', function()
+while wait(1) do
+for __,v in pairs(game:GetService("Workspace").Characters:GetChildren()) do
+if v:IsA("Model") or v:IsA("Part") or v:IsA("MeshPart") then
+local a = Instance.new("BillboardGui",v)
+a.Size = UDim2.new(1,0, 1,0)
+a.Name = "A"
+a.AlwaysOnTop = true
+local b = Instance.new("Frame",a)
+b.Size = UDim2.new(1,0, 1,0)
+b.BackgroundTransparency = 1
+b.BorderSizePixel = 0
+local c = Instance.new("TextLabel",b)
+c.Text = v.Name
+c.Size = UDim2.new(1,0, 1,0)
+c.BackgroundTransparency = 1
+c.BorderSizePixel = 0
+end
+end
+end
+end)
 w1:Button('sprint speed', function()
 Speed = 60
 
@@ -374,6 +395,3 @@ local w3 = library:Window('Credits')
 w3:Label('Credits for ui 0 x 3 7')
 w3:Label('Credits to DekuDimz#0734')
 w3:Label('aka me lol')
-
-
-
